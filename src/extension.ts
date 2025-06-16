@@ -1,20 +1,32 @@
 import * as vscode from 'vscode';
 
 export function activate(context: vscode.ExtensionContext) {
-  const treeDataProvider = new SimpleTreeDataProvider();
-  vscode.window.registerTreeDataProvider('simpleSidebarView', treeDataProvider);
-}
+  context.subscriptions.push(
+    vscode.window.registerWebviewViewProvider('webviewSidebar', {
+      resolveWebviewView(webviewView) {
+        webviewView.webview.options = {
+          enableScripts: true,
+          localResourceRoots: [
+            vscode.Uri.joinPath(context.extensionUri, 'media'),
+            vscode.Uri.joinPath(context.extensionUri, 'resources')
+          ]
+        };
 
-class SimpleTreeDataProvider implements vscode.TreeDataProvider<vscode.TreeItem> {
-  getTreeItem(element: vscode.TreeItem): vscode.TreeItem {
-    return element;
-  }
+        const jsUri = webviewView.webview.asWebviewUri(
+          vscode.Uri.joinPath(context.extensionUri, 'media', 'main.js')
+        );
 
-  getChildren(element?: vscode.TreeItem): vscode.TreeItem[] {
-    if (!element) {
-      // Корень - пустой список или с одним элементом
-      return [new vscode.TreeItem("Привет, это элемент дерева")];
-    }
-    return [];
-  }
+        webviewView.webview.html = `
+          <!DOCTYPE html>
+          <html lang="ru">
+          <head><meta charset="UTF-8"></head>
+          <body>
+            <button id="btn">Нажми меня</button>
+            <script src="${jsUri}"></script>
+          </body>
+          </html>
+        `;
+      }
+    })
+  );
 }
