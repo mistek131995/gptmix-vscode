@@ -16,7 +16,7 @@
       "activitybar": [
         {
           "id": "webviewSidebarContainer",
-          "title": "Webview Sidebar",
+          "title": "GPTMix",
           "icon": "src/resources/chat.svg"
         }
       ]
@@ -25,7 +25,7 @@
       "webviewSidebarContainer": [
         {
           "id": "webviewSidebar",
-          "name": "Мой Webview",
+          "name": "Chat",
           "type": "webview"
         }
       ]

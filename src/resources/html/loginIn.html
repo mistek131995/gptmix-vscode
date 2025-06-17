@@ -6,9 +6,21 @@
   <link href="{{cssUri}}" rel="stylesheet">
 </head>
 <body>
-  <span>{{cspSource}}</span>
-  <span>{{cssUri}}</span>
-  <input placeholder="Введите токен"/>
-  <button id="btn">Нажми меня</button>
+  <div class="d-flex flex-column align-items-center justify-content-center vh-100">
+    <div class="text-center mb-5">
+      <span>Для входа в аккаунт нужно использовать токен.</span>
+      <span>Токен можно создать в профиле.</span>
+    </div>
+
+    <form>
+      <input placeholder="Введите токен" name="token" class="mb-3"/>
+      <button id="btn" class="mb-1" type="submit">
+        Войти в аккаунт
+      </button>
+      <a href="https://gptmix.ru/profile">
+        Создать токен
+      </a>
+    </form>
+  </div>
 </body>
 </html>
