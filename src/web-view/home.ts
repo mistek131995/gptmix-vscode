@@ -8,7 +8,7 @@ export const getHomeHtml = async (context: vscode.ExtensionContext, webviewView:
   );
 
   const jsUri = webviewView.asWebviewUri(
-    vscode.Uri.joinPath(context.extensionUri, 'dist', 'resources', 'scripts', 'main.js')
+    vscode.Uri.joinPath(context.extensionUri, 'dist', 'resources', 'scripts', 'home.js')
   );
 
   const htmlBytes = await vscode.workspace.fs.readFile(htmlPath);

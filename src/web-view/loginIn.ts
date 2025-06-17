@@ -8,7 +8,7 @@ export const getLoginInHtml = async (context: vscode.ExtensionContext, webviewVi
   );
 
   const jsUri = webviewView.asWebviewUri(
-    vscode.Uri.joinPath(context.extensionUri, 'dist', 'resources', 'scripts', 'main.js')
+    vscode.Uri.joinPath(context.extensionUri, 'dist', 'resources', 'scripts', 'loginIn.js')
   );
 
   const htmlBytes = await vscode.workspace.fs.readFile(htmlPath);
