@@ -1,3 +1,7 @@
+const vscode = acquireVsCodeApi();
+
 document.getElementById("login-out")?.addEventListener("click", () => {
-    console.log("ok");
+    vscode.postMessage({
+        command: "login-out"
+    })
 });
