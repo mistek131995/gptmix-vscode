@@ -8,12 +8,11 @@ export function activate(context: vscode.ExtensionContext) {
         webviewView.webview.options = {
           enableScripts: true,
           localResourceRoots: [
-            vscode.Uri.joinPath(context.extensionUri, 'dist', 'resources', 'css')
+            vscode.Uri.joinPath(context.extensionUri, 'dist', 'resources')
           ]
         };
 
         const html = await getLoginInHtml(context, webviewView.webview);
-        console.log(html);
 
         webviewView.webview.html = html;
       }

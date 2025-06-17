@@ -1,7 +1,11 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src {{cspSource}} 'unsafe-inline';">
+  <meta http-equiv="Content-Security-Policy" 
+    content="default-src 'none'; 
+    connect-src https://gptmix.ru;
+    style-src {{cspSource}} 'unsafe-inline'; 
+    script-src {{cspSource}} 'unsafe-inline';">
   <meta charset="UTF-8">
   <link href="{{cssUri}}" rel="stylesheet">
 </head>
@@ -12,15 +16,17 @@
       <span>Токен можно создать в профиле.</span>
     </div>
 
-    <form>
+    <form id="login-in-form">
       <input placeholder="Введите токен" name="token" class="mb-3"/>
-      <button id="btn" class="mb-1" type="submit">
+      <button class="mb-1 w-100" type="submit">
         Войти в аккаунт
       </button>
-      <a href="https://gptmix.ru/profile">
+      <a class="d-block w-100 text-center" href="https://gptmix.ru/profile">
         Создать токен
       </a>
     </form>
   </div>
+
+  <script src="{{jsUri}}"></script>
 </body>
 </html>

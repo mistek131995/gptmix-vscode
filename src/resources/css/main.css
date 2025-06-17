@@ -59,3 +59,11 @@ input{
 .mb-5{
     margin-bottom: 1rem;
 }
+
+.w-100{
+    width: 100%;
+}
+
+.d-block{
+    display: block;
+}
