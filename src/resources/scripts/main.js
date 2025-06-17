@@ -6,12 +6,22 @@ const submitLoginInForm = async (event) => {
     const formData = new FormData(event.target);
     const token = formData.get('token');
 
-    if(token){
-        vscode.postMessage({
-            command: "login-success",
+    await fetch("https://gptmix.ru/api/v1/users/api-tokens/jwt", {
+        method: "POST",
+        headers: {
+            "content-type": "application/json"
+        },
+        body: JSON.stringify({
             token: token
-        });
-    }
+        })
+    }).then(async response => {
+        if(response.ok){
+            vscode.postMessage({
+                command: "login-success",
+                token: await response.text()
+            });
+        }
+    });
 };
 
-document.getElementById("login-in-form").addEventListener("submit", submitLoginInForm);
+document.getElementById("login-in-form")?.addEventListener("submit", submitLoginInForm);

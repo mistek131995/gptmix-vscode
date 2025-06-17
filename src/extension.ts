@@ -13,13 +13,17 @@ export function activate(context: vscode.ExtensionContext) {
           ]
         };
 
-        const html = await getLoginInHtml(context, webviewView.webview);
+        if(await context.secrets.get("token")){
+          webviewView.webview.html = await getHomeHtml(context, webviewView.webview);
+        }else{
+          webviewView.webview.html = await getLoginInHtml(context, webviewView.webview);
+        }
 
-        webviewView.webview.html = html;
 
         webviewView.webview.onDidReceiveMessage(async (message) => {
           if(message.command === "login-success"){
             webviewView.webview.html = await getHomeHtml(context, webviewView.webview);
+            await context.secrets.store("token", message.token);
           }
         });
       }
