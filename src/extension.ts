@@ -1,4 +1,5 @@
 import * as vscode from 'vscode';
+import { getLoginInHtml } from './web-view/loginIn';
 
 export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(
@@ -7,25 +8,19 @@ export function activate(context: vscode.ExtensionContext) {
         webviewView.webview.options = {
           enableScripts: true,
           localResourceRoots: [
-            vscode.Uri.joinPath(context.extensionUri, 'media'),
-            vscode.Uri.joinPath(context.extensionUri, 'resources')
+            vscode.Uri.joinPath(context.extensionUri, 'dist', 'resources')
           ]
         };
 
-        const jsUri = webviewView.webview.asWebviewUri(
-          vscode.Uri.joinPath(context.extensionUri, 'media', 'main.js')
+        const cssUri = webviewView.webview.asWebviewUri(
+          vscode.Uri.joinPath(context.extensionUri, 'dist', 'resources', 'main.css')
         );
 
-        webviewView.webview.html = `
-          <!DOCTYPE html>
-          <html lang="ru">
-          <head><meta charset="UTF-8"></head>
-          <body>
-            <button id="btn">Нажми меня</button>
-            <script src="${jsUri}"></script>
-          </body>
-          </html>
-        `;
+        console.log(cssUri.path);
+
+        const cspSource = webviewView.webview.cspSource;
+
+        webviewView.webview.html = getLoginInHtml(cssUri, cspSource);
       }
     })
   );

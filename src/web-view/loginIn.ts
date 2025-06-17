@@ -1,0 +1,18 @@
+import * as vscode from 'vscode';
+
+export const getLoginInHtml = (cssUri: vscode.Uri, cspPath: string) => `
+          <!DOCTYPE html>
+          <html lang="ru">
+          <head>
+            <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${cspPath} 'unsafe-inline';">
+            <meta charset="UTF-8">
+            <link href="${cssUri}" rel="stylesheet">
+          </head>
+          <body>
+            <span>${cspPath}</span>
+            <span>${cssUri}</span>
+            <input placeholder="Введите токен"/>
+            <button id="btn">Нажми меня</button>
+          </body>
+          </html>
+`;
