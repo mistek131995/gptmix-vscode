@@ -4,23 +4,18 @@ import { getLoginInHtml } from './web-view/loginIn';
 export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(
     vscode.window.registerWebviewViewProvider('webviewSidebar', {
-      resolveWebviewView(webviewView) {
+      async resolveWebviewView(webviewView) {
         webviewView.webview.options = {
           enableScripts: true,
           localResourceRoots: [
-            vscode.Uri.joinPath(context.extensionUri, 'dist', 'resources')
+            vscode.Uri.joinPath(context.extensionUri, 'dist', 'resources', 'css')
           ]
         };
 
-        const cssUri = webviewView.webview.asWebviewUri(
-          vscode.Uri.joinPath(context.extensionUri, 'dist', 'resources', 'main.css')
-        );
+        const html = await getLoginInHtml(context, webviewView.webview);
+        console.log(html);
 
-        console.log(cssUri.path);
-
-        const cspSource = webviewView.webview.cspSource;
-
-        webviewView.webview.html = getLoginInHtml(cssUri, cspSource);
+        webviewView.webview.html = html;
       }
     })
   );

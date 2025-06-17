@@ -1,18 +1,16 @@
 import * as vscode from 'vscode';
 
-export const getLoginInHtml = (cssUri: vscode.Uri, cspPath: string) => `
-          <!DOCTYPE html>
-          <html lang="ru">
-          <head>
-            <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${cspPath} 'unsafe-inline';">
-            <meta charset="UTF-8">
-            <link href="${cssUri}" rel="stylesheet">
-          </head>
-          <body>
-            <span>${cspPath}</span>
-            <span>${cssUri}</span>
-            <input placeholder="Введите токен"/>
-            <button id="btn">Нажми меня</button>
-          </body>
-          </html>
-`;
+export const getLoginInHtml = async (context: vscode.ExtensionContext, webviewView: vscode.Webview) => {
+  const htmlPath = vscode.Uri.joinPath(context.extensionUri, 'src', 'resources', 'html', 'loginIn.html');
+
+  const cssUri = webviewView.asWebviewUri(
+    vscode.Uri.joinPath(context.extensionUri, 'dist', 'resources', 'css', 'main.css')
+  );
+
+  const htmlBytes = await vscode.workspace.fs.readFile(htmlPath);
+  let htmlContent = Buffer.from(htmlBytes).toString('utf8');
+
+  return htmlContent = htmlContent
+  .replace(/{{cspSource}}/g, webviewView.cspSource)
+  .replace(/{{cssUri}}/g, cssUri.toString());
+};

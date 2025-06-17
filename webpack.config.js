@@ -50,8 +50,12 @@ const extensionConfig = {
       patterns: [
           {
               from: 'src/resources/css',
-              to: 'resources'
-          }
+              to: 'resources/css'
+          },
+          {
+            from: 'src/resources/html',
+            to: 'resources/html'
+        }
       ]
     })
   ]
