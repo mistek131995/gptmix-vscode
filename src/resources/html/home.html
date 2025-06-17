@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta http-equiv="Content-Security-Policy" 
+    content="default-src 'none'; 
+    connect-src https://gptmix.ru;
+    style-src {{cspSource}} 'unsafe-inline'; 
+    script-src {{cspSource}} 'unsafe-inline';">
+  <meta charset="UTF-8">
+  <link href="{{cssUri}}" rel="stylesheet">
+</head>
+<body>
+  <div class="d-flex flex-column align-items-center justify-content-center vh-100">
+    <span>Home page</span>
+  </div>
+
+  <script src="{{jsUri}}"></script>
+</body>
+</html>
