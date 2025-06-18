@@ -8,6 +8,12 @@ document.getElementById("login-out")?.addEventListener("click", () => {
     });
 });
 
+document.querySelector("#chat-list")?.addEventListener("click", () => {
+    vscode.postMessage({
+        command: "chat-list"
+    });
+});
+
 const getHome = async () => {
     await fetch(`https://gptmix.ru/api/v1/plugins${chatId ? `/${chatId}` : ''}`, {
         method: "GET",

@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import { getLoginInHtml } from './web-view/loginIn';
 import { getHomeHtml } from './web-view/home';
+import { getChatListHtml } from './web-view/chatList';
 
 export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(
@@ -24,6 +25,8 @@ export function activate(context: vscode.ExtensionContext) {
           if(message.command === "login-success"){
             webviewView.webview.html = await getHomeHtml(context, webviewView.webview);
             await context.secrets.store("token", message.token);
+          }else if(message.command === "chat-list"){
+            webviewView.webview.html = await getChatListHtml(context, webviewView.webview);
           }else if(message.command === "login-out"){
             webviewView.webview.html = await getLoginInHtml(context, webviewView.webview);
             await context.secrets.delete("token");
