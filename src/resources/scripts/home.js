@@ -1,4 +1,6 @@
 const vscode = acquireVsCodeApi();
+let jwtToken = null;
+let chatId = "01977c8b-e98e-740f-8c25-53f4155c5421";
 
 document.getElementById("login-out")?.addEventListener("click", () => {
     vscode.postMessage({
@@ -11,7 +13,7 @@ window.addEventListener('message', async event => {
     if (message.command === 'token') {
         jwtToken = message.token;
 
-        await fetch("https://gptmix.ru/api/v1/plugins", {
+        await fetch(`https://gptmix.ru/api/v1/plugins${chatId ? `/${chatId}` : ''}`, {
         method: "GET",
         headers: {
             "content-type": "application/json",
@@ -44,7 +46,12 @@ const insertMessages = (messages) => {
     const element = document.querySelector("#messages-container");
 
     if(messages){
+        messages.forEach(message => {
+            const div = document.createElement("div");
+            div.innerText = message.content;
 
+            element.appendChild(div);
+        });
     }else{
         const div = document.createElement("div");
         div.innerText = "Список сообщений пуст";
@@ -53,5 +60,9 @@ const insertMessages = (messages) => {
         element.classList.add("justify-content-center");
     }
 };
+
+document.querySelector("#send-message")?.addEventListener("click", async () => {
+    console.log(jwtToken);
+});
 
 vscode.postMessage({ command: 'getToken' });
