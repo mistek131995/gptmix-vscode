@@ -1,6 +1,6 @@
 const vscode = acquireVsCodeApi();
 let jwtToken = null;
-let chatId = "01977c8b-e98e-740f-8c25-53f4155c5421";
+let chatId = null;
 
 document.getElementById("login-out")?.addEventListener("click", () => {
     vscode.postMessage({
@@ -70,7 +70,12 @@ document.querySelector("#send-message")?.addEventListener("click", async () => {
     const messageElm = document.querySelector("textarea[name='message']");
     const modelSelectElm = document.querySelector("select[name='models-select']");
 
-    if(messageElm){
+    if(messageElm && modelSelectElm){
+
+        if(!chatId){
+            chatId = await createChat(messageElm.value, modelSelectElm.value);
+        }
+
         appendMessage(messageElm.value, "user");
         appendMessage("", "assistant");
 
@@ -117,6 +122,25 @@ document.querySelector("#send-message")?.addEventListener("click", async () => {
     }
 });
 
+const createChat = async (message, model) => {
+    return await fetch("https://gptmix.ru/api/v1/chats", {
+        method: "POST",
+        headers: {
+            "content-type": "application/json",
+            "authorization": "Bearer " + jwtToken
+        },
+        body: JSON.stringify({
+            message: message,
+            model: model
+        })
+    })
+    .then(async response => {
+        if(response.ok){
+            return response.json();
+        }
+    });
+};
+
 const appendMessage = (message, role) => {
     const messageContainerElm = document.querySelector("#messages-container");
 
@@ -124,7 +148,7 @@ const appendMessage = (message, role) => {
     div.innerHTML = marked.parse(message);
     div.className = `message ${role}`;
     messageContainerElm.appendChild(div);
-}
+};
 
 function addCopyButtons() {
     const codeBlocks = document.querySelectorAll('.message pre code');
