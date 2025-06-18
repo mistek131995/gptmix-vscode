@@ -69,11 +69,16 @@ const insertMessages = (messages) => {
 document.querySelector("#send-message")?.addEventListener("click", async () => {
     const messageElm = document.querySelector("textarea[name='message']");
     const modelSelectElm = document.querySelector("select[name='models-select']");
+    const messageContainerElm = document.querySelector("#messages-container");
 
     if(messageElm && modelSelectElm){
 
         if(!chatId){
             chatId = await createChat(messageElm.value, modelSelectElm.value);
+            
+            messageContainerElm.classList.remove("justify-content-center");
+            messageContainerElm.classList.add("justify-content-start");
+            messageContainerElm.innerHTML = "";
         }
 
         appendMessage(messageElm.value, "user");
