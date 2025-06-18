@@ -48,8 +48,8 @@ const insertMessages = (messages) => {
     if(messages){
         messages.forEach(message => {
             const div = document.createElement("div");
-            div.innerText = message.content;
-
+            div.innerHTML = marked.parse(message.content);
+            div.className = `message ${message.role}`;
             element.appendChild(div);
         });
     }else{

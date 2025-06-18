@@ -11,11 +11,16 @@ export const getHomeHtml = async (context: vscode.ExtensionContext, webviewView:
     vscode.Uri.joinPath(context.extensionUri, 'dist', 'resources', 'scripts', 'home.js')
   );
 
+  const markedJs = webviewView.asWebviewUri(
+    vscode.Uri.joinPath(context.extensionUri, 'dist', 'resources', 'scripts', 'marked.js')
+  );
+
   const htmlBytes = await vscode.workspace.fs.readFile(htmlPath);
   let htmlContent = Buffer.from(htmlBytes).toString('utf8');
 
   return htmlContent = htmlContent
   .replace(/{{cspSource}}/g, webviewView.cspSource)
   .replace(/{{cssUri}}/g, cssUri.toString())
-  .replace(/{{jsUri}}/g, jsUri.toString());
+  .replace(/{{jsUri}}/g, jsUri.toString())
+  .replace(/{{markedJs}}/g, markedJs.toString());
 };

@@ -8,6 +8,33 @@
     script-src {{cspSource}} 'unsafe-inline';">
   <meta charset="UTF-8">
   <link href="{{cssUri}}" rel="stylesheet">
+
+  <style>
+    .message{
+      max-width: 100%;
+      width: 100%;
+    }
+
+    .message.user{
+      text-align: center;
+      border: 1px solid var(--vscode-panel-border);
+      border-radius: 1rem;
+    }
+
+    .message.assistant{
+      text-align: start;
+    }
+
+    .message pre code{
+      display: inline-block;
+      max-width: 100%;
+      white-space: pre-wrap;
+      word-break: break-word;
+      overflow-wrap: break-word;
+      font-size: 0.75rem;
+      padding: 0.5rem;
+    }
+  </style>
 </head>
 <body>
   <div class="d-flex flex-column align-items-center justify-content-center vh-100">
@@ -16,7 +43,7 @@
       <button id="chats-history">История чатов</button>
       <button id="login-out">Выход</button>
     </div>
-    <div id="messages-container" class="d-flex flex-column flex-grow-1 w-100" style="overflow-y: auto;">
+    <div id="messages-container" class="d-flex flex-column flex-grow-1 w-100" style="overflow-y: auto; scrollbar-width: none;">
     </div>
 
     <div class="w-100">
@@ -29,6 +56,7 @@
     </div>
   </div>
 
+  <script src="{{markedJs}}"></script>
   <script src="{{jsUri}}"></script>
 </body>
 </html>
