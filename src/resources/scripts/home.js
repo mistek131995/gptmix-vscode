@@ -8,25 +8,30 @@ document.getElementById("login-out")?.addEventListener("click", () => {
     });
 });
 
-window.addEventListener('message', async event => {
-    const message = event.data;
-    if (message.command === 'token') {
-        jwtToken = message.token;
-
-        await fetch(`https://gptmix.ru/api/v1/plugins${chatId ? `/${chatId}` : ''}`, {
+const getHome = async () => {
+    await fetch(`https://gptmix.ru/api/v1/plugins${chatId ? `/${chatId}` : ''}`, {
         method: "GET",
         headers: {
             "content-type": "application/json",
             "authorization": "Bearer " + jwtToken
         }
-        }).then(async response => {
+    })
+    .then(async response => {
         if(response.ok){
             response.json().then(data => {
                 insertModels(data.models);
                 insertMessages(data.messages);
             });
         }
-        });
+    });
+}
+
+window.addEventListener('message', async event => {
+    const message = event.data;
+    if (message.command === 'token') {
+        jwtToken = message.token;
+
+        await getHome();
     }
 });
 
@@ -47,13 +52,11 @@ const insertMessages = (messages) => {
 
     if(messages){
         messages.forEach(message => {
-            const div = document.createElement("div");
-            div.innerHTML = marked.parse(message.content);
-            div.className = `message ${message.role}`;
-            element.appendChild(div);
+            appendMessage(message.content, message.role);
         });
 
         addCopyButtons();
+        element.scrollTop = element.scrollHeight;
     }else{
         const div = document.createElement("div");
         div.innerText = "Список сообщений пуст";
@@ -64,8 +67,64 @@ const insertMessages = (messages) => {
 };
 
 document.querySelector("#send-message")?.addEventListener("click", async () => {
-    console.log(jwtToken);
+    const messageElm = document.querySelector("textarea[name='message']");
+    const modelSelectElm = document.querySelector("select[name='models-select']");
+
+    if(messageElm){
+        appendMessage(messageElm.value, "user");
+        appendMessage("", "assistant");
+
+        await fetch("https://gptmix.ru/api/v1/chats/messages", {
+            method: "POST",
+            headers: {
+                "content-type": "application/json",
+                "authorization": "Bearer " + jwtToken
+            },
+            body: JSON.stringify({
+                chatId: chatId,
+                message: messageElm.value,
+                model: modelSelectElm.value
+            })
+        }).then(async response => {
+            if (!response.body) {
+                throw new Error('ReadableStream not supported in this environment.');
+            }
+
+            const reader = response.body.getReader();
+            const decoder = new TextDecoder('utf-8');
+
+            const messageContainerElm = document.querySelector("#messages-container");
+            const lastMessage = messageContainerElm.children[messageContainerElm.children.length - 1];
+
+            while (true) {
+                const { done, value } = await reader.read();
+                if (done){
+                    break;
+                }
+
+        
+                const chunk = decoder.decode(value, { stream: true });
+                chunk.split('\n').forEach(line => {
+                    if (line.startsWith('data:')) {
+                        const message = line.replace('data: ', '');
+                        lastMessage.innerHTML = marked.parse(lastMessage.innerHTML + message);
+                    }
+                });
+            }
+
+            getHome();
+        });
+    }
 });
+
+const appendMessage = (message, role) => {
+    const messageContainerElm = document.querySelector("#messages-container");
+
+    const div = document.createElement("div");
+    div.innerHTML = marked.parse(message);
+    div.className = `message ${role}`;
+    messageContainerElm.appendChild(div);
+}
 
 function addCopyButtons() {
     const codeBlocks = document.querySelectorAll('.message pre code');
@@ -75,7 +134,7 @@ function addCopyButtons() {
       pre.style.position = 'relative';
   
       const btn = document.createElement('button');
-      btn.textContent = 'Copy';
+      btn.textContent = 'Копировать';
       btn.setAttribute('aria-label', 'Copy code');
       btn.style.position = 'absolute';
       btn.style.top = '4px';
@@ -103,11 +162,11 @@ function addCopyButtons() {
       btn.addEventListener('click', async () => {
         try {
           await navigator.clipboard.writeText(codeBlock.innerText);
-          btn.textContent = 'Copied!';
-          setTimeout(() => (btn.textContent = 'Copy'), 1500);
+          btn.textContent = 'Скопировано!';
+          setTimeout(() => (btn.textContent = 'Копировать'), 1500);
         } catch {
-          btn.textContent = 'Failed';
-          setTimeout(() => (btn.textContent = 'Copy'), 1500);
+          btn.textContent = 'Ошибка';
+          setTimeout(() => (btn.textContent = 'Копировать'), 1500);
         }
       });
   
@@ -115,4 +174,4 @@ function addCopyButtons() {
     });
   }
 
-    vscode.postMessage({ command: 'getToken' });
+vscode.postMessage({ command: 'getToken' });
