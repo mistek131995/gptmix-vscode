@@ -27,6 +27,9 @@ export function activate(context: vscode.ExtensionContext) {
           }else if(message.command === "login-out"){
             webviewView.webview.html = await getLoginInHtml(context, webviewView.webview);
             await context.secrets.delete("token");
+          }else if (message.command === 'getToken') {
+            const token = await context.secrets.get('token');
+            webviewView.webview.postMessage({ command: 'token', token });
           }
         });
       }
