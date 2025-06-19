@@ -42,15 +42,12 @@ const getHome = async () => {
 window.addEventListener('message', async event => {
     const message = event.data;
 
-    if (message.command === 'token') {
-        jwtToken = message.token;
-    }
-    else if(message.command === "chatId")
-    {
+    if(message.command === "getHome"){
         chatId = message.chatId;
-    }
+        jwtToken = message.token;
 
-    await getHome();
+        await getHome();
+    }
 });
 
 const insertModels = (models) => {
@@ -222,5 +219,8 @@ function addCopyButtons() {
   }
 
 if(!jwtToken){
-    vscode.postMessage({ command: 'getToken' });
+    vscode.postMessage({ 
+        command: "getHome",
+        chatId: chatId
+    });
 }

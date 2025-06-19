@@ -22,33 +22,42 @@ export function activate(context: vscode.ExtensionContext) {
 
 
         webviewView.webview.onDidReceiveMessage(async (message) => {
-          if(message.command === "login-success")
-          {
-            webviewView.webview.html = await getHomeHtml(context, webviewView.webview);
-            await context.secrets.store("token", message.token);
-          }
-          else if(message.command === "chat-list")
-          {
+          if(message.command === "getChatList"){
             webviewView.webview.html = await getChatListHtml(context, webviewView.webview);
+            webviewView.webview.postMessage({ 
+              command: message.command,
+              token: await context.secrets.get('token')
+            });
           }
-          else if(message.command === "home")
-          {
+          else if(message.command === "getHome"){
             webviewView.webview.html = await getHomeHtml(context, webviewView.webview);
             webviewView.webview.postMessage({ 
-              command: 'chatId', 
-              chatId: message.chatId
+              command: message.command,
+              chatId: message.chatId,
+              token: await context.secrets.get('token')
             });
-          } 
-          else if(message.command === "login-out")
+          }
+          else if(message.command === "loginIn")
+          {
+             webviewView.webview.html = await getHomeHtml(context, webviewView.webview);
+             await context.secrets.store("token", message.token);
+          }
+          else if(message.command === "loginOut")
           {
             webviewView.webview.html = await getLoginInHtml(context, webviewView.webview);
             await context.secrets.delete("token");
           }
-          else if (message.command === 'getToken') 
-          {
-            const token = await context.secrets.get('token');
-            webviewView.webview.postMessage({ command: 'token', token });
-          }
+
+
+          // else if(message.command === "home")
+          // {
+          //   webviewView.webview.html = await getHomeHtml(context, webviewView.webview);
+          //   webviewView.webview.postMessage({ 
+          //     command: 'chatId', 
+          //     chatId: message.chatId,
+          //     token: await context.secrets.get('token')
+          //   });
+          // }
         });
       }
     })

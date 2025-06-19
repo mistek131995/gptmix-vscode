@@ -1,26 +1,27 @@
 const vscode = acquireVsCodeApi();
 let jwtToken = null;
 
+document.querySelector("#login-out")?.addEventListener("click", () => {
+    vscode.postMessage({
+        command: "loginOut"
+    });
+});
+
+document.querySelector("#home")?.addEventListener("click", () => goHome(null));
+
 window.addEventListener("message", async event => {
     const message = event.data;
-    if (message.command === 'token') {
+
+    if (message.command === 'getChatList') {
         jwtToken = message.token;
 
         await getChatList();
     }
 });
 
-document.getElementById("login-out")?.addEventListener("click", () => {
-    vscode.postMessage({
-        command: "login-out"
-    });
-});
-
-document.getElementById("home")?.addEventListener("click", () => goHome(null));
-
 const goHome = (chatId) => {
     vscode.postMessage({
-        command: "home",
+        command: "getHome",
         chatId: chatId
     });
 };
@@ -53,6 +54,4 @@ const getChatList = async () => {
     });
 };
 
-
-
-vscode.postMessage({ command: 'getToken' });
+vscode.postMessage({ command: 'getChatList' });

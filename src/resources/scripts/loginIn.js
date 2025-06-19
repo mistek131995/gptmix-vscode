@@ -17,7 +17,7 @@ const submitLoginInForm = async (event) => {
     }).then(async response => {
         if(response.ok){
             vscode.postMessage({
-                command: "login-success",
+                command: "loginIn",
                 token: await response.text()
             });
         }
