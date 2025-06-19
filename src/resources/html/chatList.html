@@ -4,6 +4,7 @@
         <meta http-equiv="Content-Security-Policy" 
             content="default-src 'none'; 
             connect-src https://gptmix.ru;
+            img-src {{cspSource}} data: https:; 
             style-src {{cspSource}} 'unsafe-inline'; 
             script-src {{cspSource}} 'unsafe-inline';">
         <meta charset="UTF-8">
@@ -19,13 +20,22 @@
                 background-color: var(--vscode-editor-background);
                 cursor: pointer;
             }
+
+            button img{
+                filter: invert(1);
+                padding-top: 0.25rem;
+            }
         </style>
     </head>
     <body>
         <div class="d-flex flex-column align-items-center justify-content-center vh-100">
-            <div class="d-flex w-100 mb-1">
-                <button id="home">Новый чат</button>
-                <button id="login-out">Выход</button>
+            <div class="d-flex justify-content-between w-100 mb-1">
+                <button id="home">
+                    <img src="{{newChatIcon}}"/>
+                </button>
+                <button id="login-out">
+                    <img style="filter: brightness(0) invert(1);" src="{{loginOutIcon}}"/>
+                </button>
             </div>
             <div id="chat-list-container" class="d-flex flex-column flex-grow-1 w-100" style="overflow-y: auto; scrollbar-width: none;">
             </div>

@@ -1,5 +1,4 @@
 button{
-    width: 100%;
     background-color: var(--vscode-editor-background);
     border: 1px solid var(--vscode-panel-border);
     color: var(--vscode-editor-foreground);
@@ -42,6 +41,14 @@ input, textarea, select{
 
 .justify-content-center{
     justify-content: center;
+}
+
+.justify-content-end{
+    justify-content: end;
+}
+
+.justify-content-between{
+    justify-content: space-between;
 }
 
 .vh-100{

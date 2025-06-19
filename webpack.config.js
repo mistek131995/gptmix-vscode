@@ -59,6 +59,10 @@ const extensionConfig = {
         {
           from: 'src/resources/scripts',
           to: 'resources/scripts'
+        },
+        {
+          from: 'src/resources/img',
+          to: 'resources/img'
         }
       ]
     })

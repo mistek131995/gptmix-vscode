@@ -47,17 +47,6 @@ export function activate(context: vscode.ExtensionContext) {
             webviewView.webview.html = await getLoginInHtml(context, webviewView.webview);
             await context.secrets.delete("token");
           }
-
-
-          // else if(message.command === "home")
-          // {
-          //   webviewView.webview.html = await getHomeHtml(context, webviewView.webview);
-          //   webviewView.webview.postMessage({ 
-          //     command: 'chatId', 
-          //     chatId: message.chatId,
-          //     token: await context.secrets.get('token')
-          //   });
-          // }
         });
       }
     })
