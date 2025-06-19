@@ -15,22 +15,37 @@ export function activate(context: vscode.ExtensionContext) {
         };
 
         if(await context.secrets.get("token")){
-          webviewView.webview.html = await getHomeHtml(context, webviewView.webview);
+          webviewView.webview.html = await getChatListHtml(context, webviewView.webview);
         }else{
           webviewView.webview.html = await getLoginInHtml(context, webviewView.webview);
         }
 
 
         webviewView.webview.onDidReceiveMessage(async (message) => {
-          if(message.command === "login-success"){
+          if(message.command === "login-success")
+          {
             webviewView.webview.html = await getHomeHtml(context, webviewView.webview);
             await context.secrets.store("token", message.token);
-          }else if(message.command === "chat-list"){
+          }
+          else if(message.command === "chat-list")
+          {
             webviewView.webview.html = await getChatListHtml(context, webviewView.webview);
-          }else if(message.command === "login-out"){
+          }
+          else if(message.command === "home")
+          {
+            webviewView.webview.html = await getHomeHtml(context, webviewView.webview);
+            webviewView.webview.postMessage({ 
+              command: 'chatId', 
+              chatId: message.chatId
+            });
+          } 
+          else if(message.command === "login-out")
+          {
             webviewView.webview.html = await getLoginInHtml(context, webviewView.webview);
             await context.secrets.delete("token");
-          }else if (message.command === 'getToken') {
+          }
+          else if (message.command === 'getToken') 
+          {
             const token = await context.secrets.get('token');
             webviewView.webview.postMessage({ command: 'token', token });
           }

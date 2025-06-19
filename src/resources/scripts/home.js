@@ -14,6 +14,13 @@ document.querySelector("#chat-list")?.addEventListener("click", () => {
     });
 });
 
+document.querySelector("#new-chat")?.addEventListener("click", () => {
+    vscode.postMessage({
+        command: "home",
+        chatId: null
+    });
+});
+
 const getHome = async () => {
     await fetch(`https://gptmix.ru/api/v1/plugins${chatId ? `/${chatId}` : ''}`, {
         method: "GET",
@@ -30,15 +37,20 @@ const getHome = async () => {
             });
         }
     });
-}
+};
 
 window.addEventListener('message', async event => {
     const message = event.data;
+
     if (message.command === 'token') {
         jwtToken = message.token;
-
-        await getHome();
     }
+    else if(message.command === "chatId")
+    {
+        chatId = message.chatId;
+    }
+
+    await getHome();
 });
 
 const insertModels = (models) => {
@@ -209,4 +221,6 @@ function addCopyButtons() {
     });
   }
 
-vscode.postMessage({ command: 'getToken' });
+if(!jwtToken){
+    vscode.postMessage({ command: 'getToken' });
+}

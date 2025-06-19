@@ -8,10 +8,27 @@
             script-src {{cspSource}} 'unsafe-inline';">
         <meta charset="UTF-8">
         <link href="{{cssUri}}" rel="stylesheet">
+        <style>
+            .chat-item{
+                text-wrap: nowrap;
+                overflow-x: hidden;
+                padding: 0.5rem 0.25rem;
+            }
+
+            .chat-item:hover{
+                background-color: var(--vscode-editor-background);
+                cursor: pointer;
+            }
+        </style>
     </head>
     <body>
-        <div>
-            Chat List
+        <div class="d-flex flex-column align-items-center justify-content-center vh-100">
+            <div class="d-flex w-100 mb-1">
+                <button id="home">Новый чат</button>
+                <button id="login-out">Выход</button>
+            </div>
+            <div id="chat-list-container" class="d-flex flex-column flex-grow-1 w-100" style="overflow-y: auto; scrollbar-width: none;">
+            </div>
         </div>
         <script src="{{jsUri}}"></script>
     </body>
