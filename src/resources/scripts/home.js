@@ -16,7 +16,8 @@ document.querySelector("#chat-list")?.addEventListener("click", () => {
 
 document.querySelector("#new-chat")?.addEventListener("click", () => {
     vscode.postMessage({
-        command: "home",
+        command: "getHome",
+        token: jwtToken,
         chatId: null
     });
 });
@@ -46,9 +47,9 @@ window.addEventListener('message', async event => {
         chatId = message.chatId;
         jwtToken = message.token;
 
-        if(chatId){
-            const element = document.querySelector("#messages-container");
+        const element = document.querySelector("#messages-container");
 
+        if(chatId){
             element.classList.remove("justify-content-center");
             element.classList.add("justify-content-start");
             element.innerHTML = "";
@@ -81,6 +82,9 @@ const insertMessages = (messages) => {
         addCopyButtons();
         element.scrollTop = element.scrollHeight;
     }else{
+        element.classList.remove("justify-content-start");
+        element.innerHTML = "";
+
         const div = document.createElement("div");
         div.innerText = "Список сообщений пуст";
         div.className = "text-center";
