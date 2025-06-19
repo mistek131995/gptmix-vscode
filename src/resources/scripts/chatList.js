@@ -39,6 +39,8 @@ const getChatList = async () => {
     .then(async response => {
         if(response.ok){
             await response.json().then(data => {
+                chatListContainer.innerHTML = "";
+
                 data.chats.forEach(item => {
                     const chatItem = document.createElement("span");
                     chatItem.classList = "chat-item";
