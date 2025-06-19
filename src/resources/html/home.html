@@ -4,6 +4,7 @@
   <meta http-equiv="Content-Security-Policy" 
     content="default-src 'none'; 
     connect-src https://gptmix.ru;
+    img-src {{cspSource}} data: https:; 
     style-src {{cspSource}} 'unsafe-inline'; 
     script-src {{cspSource}} 'unsafe-inline';">
   <meta charset="UTF-8">
@@ -34,24 +35,41 @@
       font-size: 0.75rem;
       padding: 0.5rem;
     }
+
+    button img{
+        filter: invert(1);
+        padding-top: 0.25rem;
+    }
+
+    textarea{
+      resize: none;
+    }
   </style>
 </head>
 <body>
   <div class="d-flex flex-column align-items-center justify-content-center vh-100">
-    <div class="d-flex w-100">
-      <button id="new-chat">Новый чат</button>
-      <button id="chat-list">Чаты</button>
-      <button id="login-out">Выход</button>
+    <div class="d-flex justify-content-between w-100 mb-1">
+      <button id="new-chat">
+        <img src="{{newChatIcon}}"/>
+      </button>
+      <button id="chat-list">
+        <img src="{{chatListIcon}}"/>
+      </button>
+      <button id="login-out">
+        <img src="{{loginOutIcon}}"/>
+      </button>
     </div>
     <div id="messages-container" class="d-flex flex-column flex-grow-1 w-100" style="overflow-y: auto; scrollbar-width: none;">
     </div>
 
     <div class="w-100">
-      <textarea name="message" placeholder="Введите сообщение"></textarea>
+      <textarea class="mb-1" name="message" placeholder="Введите сообщение"></textarea>
       <div class="d-flex">
-        <select name="models-select">
+        <select class="me-2" name="models-select">
         </select>
-        <button id="send-message">Отправить</button>
+        <button id="send-message">
+          <img src="{{sendMessageIcon}}"/>
+        </button>
       </div>
     </div>
   </div>

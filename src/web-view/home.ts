@@ -15,6 +15,22 @@ export const getHomeHtml = async (context: vscode.ExtensionContext, webviewView:
     vscode.Uri.joinPath(context.extensionUri, 'dist', 'resources', 'scripts', 'marked.js')
   );
 
+  const loginOutIcon = webviewView.asWebviewUri(
+    vscode.Uri.joinPath(context.extensionUri, 'dist', 'resources', 'img', 'door-open.svg')
+  );
+
+  const newChatIcon = webviewView.asWebviewUri(
+    vscode.Uri.joinPath(context.extensionUri, 'dist', 'resources', 'img', 'plus-lg.svg')
+  );
+
+  const chatListIcon = webviewView.asWebviewUri(
+    vscode.Uri.joinPath(context.extensionUri, 'dist', 'resources', 'img', 'list-ul.svg')
+  );
+
+  const sendMessageIcon = webviewView.asWebviewUri(
+    vscode.Uri.joinPath(context.extensionUri, 'dist', 'resources', 'img', 'arrow-right.svg')
+  );
+
   const htmlBytes = await vscode.workspace.fs.readFile(htmlPath);
   let htmlContent = Buffer.from(htmlBytes).toString('utf8');
 
@@ -22,5 +38,9 @@ export const getHomeHtml = async (context: vscode.ExtensionContext, webviewView:
   .replace(/{{cspSource}}/g, webviewView.cspSource)
   .replace(/{{cssUri}}/g, cssUri.toString())
   .replace(/{{jsUri}}/g, jsUri.toString())
-  .replace(/{{markedJs}}/g, markedJs.toString());
+  .replace(/{{markedJs}}/g, markedJs.toString())
+  .replace(/{{loginOutIcon}}/g, loginOutIcon.toString())
+  .replace(/{{newChatIcon}}/g, newChatIcon.toString())
+  .replace(/{{chatListIcon}}/g, chatListIcon.toString())
+  .replace(/{{sendMessageIcon}}/g, sendMessageIcon.toString());
 };
