@@ -47,14 +47,6 @@ window.addEventListener('message', async event => {
         chatId = message.chatId;
         jwtToken = message.token;
 
-        const element = document.querySelector("#messages-container");
-
-        if(chatId){
-            element.classList.remove("justify-content-center");
-            element.classList.add("justify-content-start");
-            element.innerHTML = "";
-        }
-
         await getHome();
     }
 });
@@ -75,6 +67,10 @@ const insertMessages = (messages) => {
     const element = document.querySelector("#messages-container");
 
     if(messages){
+        element.classList.remove("justify-content-center");
+        element.classList.add("justify-content-start");
+        element.innerHTML = "";
+
         messages.forEach(message => {
             appendMessage(message.content, message.role);
         });
