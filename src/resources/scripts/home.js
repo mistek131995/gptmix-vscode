@@ -4,13 +4,13 @@ let chatId = null;
 
 document.getElementById("login-out")?.addEventListener("click", () => {
     vscode.postMessage({
-        command: "login-out"
+        command: "loginOut"
     });
 });
 
 document.querySelector("#chat-list")?.addEventListener("click", () => {
     vscode.postMessage({
-        command: "chat-list"
+        command: "getChatList"
     });
 });
 
@@ -45,6 +45,14 @@ window.addEventListener('message', async event => {
     if(message.command === "getHome"){
         chatId = message.chatId;
         jwtToken = message.token;
+
+        if(chatId){
+            const element = document.querySelector("#messages-container");
+
+            element.classList.remove("justify-content-center");
+            element.classList.add("justify-content-start");
+            element.innerHTML = "";
+        }
 
         await getHome();
     }
@@ -217,10 +225,3 @@ function addCopyButtons() {
       pre.appendChild(btn);
     });
   }
-
-if(!jwtToken){
-    vscode.postMessage({ 
-        command: "getHome",
-        chatId: chatId
-    });
-}
