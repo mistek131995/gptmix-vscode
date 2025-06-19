@@ -2,26 +2,6 @@ const vscode = acquireVsCodeApi();
 let jwtToken = null;
 let chatId = null;
 
-document.getElementById("login-out")?.addEventListener("click", () => {
-    vscode.postMessage({
-        command: "loginOut"
-    });
-});
-
-document.querySelector("#chat-list")?.addEventListener("click", () => {
-    vscode.postMessage({
-        command: "getChatList"
-    });
-});
-
-document.querySelector("#new-chat")?.addEventListener("click", () => {
-    vscode.postMessage({
-        command: "getHome",
-        token: jwtToken,
-        chatId: null
-    });
-});
-
 const getHome = async () => {
     await fetch(`https://gptmix.ru/api/v1/plugins${chatId ? `/${chatId}` : ''}`, {
         method: "GET",
@@ -39,17 +19,6 @@ const getHome = async () => {
         }
     });
 };
-
-window.addEventListener('message', async event => {
-    const message = event.data;
-
-    if(message.command === "getHome"){
-        chatId = message.chatId;
-        jwtToken = message.token;
-
-        await getHome();
-    }
-});
 
 const insertModels = (models) => {
     const element = document.querySelector("select[name='models-select']");
@@ -89,23 +58,28 @@ const insertMessages = (messages) => {
     }
 };
 
-document.querySelector("#send-message")?.addEventListener("click", async () => {
+const sendMessage = async () => {
     const messageElm = document.querySelector("textarea[name='message']");
+    const messageContent = messageElm.value;
+    messageElm.value = "";
+
     const modelSelectElm = document.querySelector("select[name='models-select']");
     const messageContainerElm = document.querySelector("#messages-container");
 
     if(messageElm && modelSelectElm){
 
         if(!chatId){
-            chatId = await createChat(messageElm.value, modelSelectElm.value);
+            chatId = await createChat(messageContent, modelSelectElm.value);
             
             messageContainerElm.classList.remove("justify-content-center");
             messageContainerElm.classList.add("justify-content-start");
             messageContainerElm.innerHTML = "";
         }
 
-        appendMessage(messageElm.value, "user");
+        appendMessage(messageContent, "user");
         appendMessage("", "assistant");
+
+        messageContainerElm.scrollTop = messageContainerElm.scrollHeight;
 
         await fetch("https://gptmix.ru/api/v1/chats/messages", {
             method: "POST",
@@ -115,7 +89,7 @@ document.querySelector("#send-message")?.addEventListener("click", async () => {
             },
             body: JSON.stringify({
                 chatId: chatId,
-                message: messageElm.value,
+                message: messageContent,
                 model: modelSelectElm.value
             })
         }).then(async response => {
@@ -143,12 +117,14 @@ document.querySelector("#send-message")?.addEventListener("click", async () => {
                         lastMessage.innerHTML = marked.parse(lastMessage.innerHTML + message);
                     }
                 });
+
+                messageContainerElm.scrollTop = messageContainerElm.scrollHeight;
             }
 
             getHome();
         });
     }
-});
+};
 
 const createChat = async (message, model) => {
     return await fetch("https://gptmix.ru/api/v1/chats", {
@@ -224,4 +200,42 @@ function addCopyButtons() {
   
       pre.appendChild(btn);
     });
-  }
+}
+
+document.querySelector("#send-message")?.addEventListener("click", sendMessage);
+document.querySelector("textarea[name='message']")?.addEventListener("keydown", async (event) => {
+    if (event.key === 'Enter' && !event.shiftKey) {
+        await sendMessage();
+      }
+});
+
+window.addEventListener('message', async event => {
+    const message = event.data;
+
+    if(message.command === "getHome"){
+        chatId = message.chatId;
+        jwtToken = message.token;
+
+        await getHome();
+    }
+});
+
+document.getElementById("login-out")?.addEventListener("click", () => {
+    vscode.postMessage({
+        command: "loginOut"
+    });
+});
+
+document.querySelector("#chat-list")?.addEventListener("click", () => {
+    vscode.postMessage({
+        command: "getChatList"
+    });
+});
+
+document.querySelector("#new-chat")?.addEventListener("click", () => {
+    vscode.postMessage({
+        command: "getHome",
+        token: jwtToken,
+        chatId: null
+    });
+});
