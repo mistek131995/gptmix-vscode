@@ -2,6 +2,8 @@ const vscode = acquireVsCodeApi();
 let jwtToken = null;
 let chatId = null;
 
+let abortController = null;
+
 const getHome = async () => {
     await fetch(`https://gptmix.ru/api/v1/plugins${chatId ? `/${chatId}` : ''}`, {
         method: "GET",
@@ -59,12 +61,16 @@ const insertMessages = (messages) => {
 };
 
 const sendMessage = async () => {
+    abortController = new AbortController();
     const messageElm = document.querySelector("textarea[name='message']");
     const messageContent = messageElm.value;
     messageElm.value = "";
 
     const modelSelectElm = document.querySelector("select[name='models-select']");
     const messageContainerElm = document.querySelector("#messages-container");
+
+    const sendMessageBtn = document.querySelector("#send-message");
+    const stopStreamingBtn = document.querySelector("#stop-streaming");
 
     if(messageElm && modelSelectElm){
 
@@ -79,10 +85,13 @@ const sendMessage = async () => {
         appendMessage(messageContent, "user");
         appendMessage("", "assistant");
 
+        sendMessageBtn.classList.add("d-none");
+        stopStreamingBtn.classList.remove("d-none");
         messageContainerElm.scrollTop = messageContainerElm.scrollHeight;
 
         await fetch("https://gptmix.ru/api/v1/chats/messages", {
             method: "POST",
+            signal: abortController.signal,
             headers: {
                 "content-type": "application/json",
                 "authorization": "Bearer " + jwtToken
@@ -122,7 +131,27 @@ const sendMessage = async () => {
             }
 
             getHome();
+        })
+        .finally(() => {
+            abortController = null;
+            sendMessageBtn.classList.remove("d-none");
+            stopStreamingBtn.classList.add("d-none");
         });
+    }
+};
+
+const stopStreaming = () => {
+    const sendMessageBtn = document.querySelector("#send-message");
+    const stopStreamingBtn = document.querySelector("#stop-streaming");
+    const messageContainerElm = document.querySelector("#messages-container");
+
+    abortController?.abort();
+
+    sendMessageBtn.classList.remove("d-none");
+    stopStreamingBtn.classList.add("d-none");
+
+    if (messageContainerElm?.lastElementChild) {
+        messageContainerElm.removeChild(messageContainerElm.lastElementChild);
     }
 };
 
@@ -203,8 +232,11 @@ function addCopyButtons() {
 }
 
 document.querySelector("#send-message")?.addEventListener("click", sendMessage);
+document.querySelector("#stop-streaming")?.addEventListener("click", stopStreaming);
+
 document.querySelector("textarea[name='message']")?.addEventListener("keydown", async (event) => {
     if (event.key === 'Enter' && !event.shiftKey) {
+        event.preventDefault();
         await sendMessage();
       }
 });
