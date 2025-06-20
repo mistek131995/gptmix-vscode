@@ -47,8 +47,22 @@ export function activate(context: vscode.ExtensionContext) {
             webviewView.webview.html = await getLoginInHtml(context, webviewView.webview);
             await context.secrets.delete("token");
           }
+          else if(message.command === "apiError")
+          {
+            const code = message.code;
+
+            await apiExceptionHandler(context, webviewView, code);
+          }
         });
       }
     })
   );
 }
+
+const apiExceptionHandler = async(context: vscode.ExtensionContext, webviewView: vscode.WebviewView, code: any) => {
+  if(code === 401){
+    vscode.window.showErrorMessage("GPTMix: Ошибка аутентификации");
+    webviewView.webview.html = await getLoginInHtml(context, webviewView.webview);
+    await context.secrets.delete("token");
+  }
+};

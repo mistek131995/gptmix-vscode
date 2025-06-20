@@ -52,6 +52,11 @@ const getChatList = async () => {
                     chatListContainer.appendChild(chatItem);
                 });
             });
+        } else {
+            vscode.postMessage({
+                command: "apiError",
+                code: response.status
+            });
         }
     });
 };
