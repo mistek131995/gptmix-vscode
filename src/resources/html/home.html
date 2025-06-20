@@ -11,15 +11,19 @@
   <link href="{{cssUri}}" rel="stylesheet">
 
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
     .message{
       max-width: 100%;
       width: 100%;
     }
 
     .message.user{
-      text-align: center;
       border: 1px solid var(--vscode-panel-border);
-      border-radius: 1rem;
+      border-radius: 0.5rem;
+      padding: 0 0.5rem;
     }
 
     .message.assistant{

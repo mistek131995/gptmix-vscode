@@ -29,6 +29,7 @@ const insertModels = (models) => {
         const option = document.createElement("option");
         option.value = item.id;
         option.textContent = item.name;
+        option.selected = item.isDefault;
 
         element.appendChild(option);
     });
