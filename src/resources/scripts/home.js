@@ -5,7 +5,7 @@ let chatId = null;
 let abortController = null;
 
 const getHome = async () => {
-    await fetch(`https://gptmix.ru/api/v1/plugins${chatId ? `/${chatId}` : ''}`, {
+    await fetch(`https://mixgpt.ru/api/v1/plugins${chatId ? `/${chatId}` : ''}`, {
         method: "GET",
         headers: {
             "content-type": "application/json",
@@ -18,17 +18,26 @@ const getHome = async () => {
                 insertModels(data.models);
                 insertMessages(data.messages);
             });
+        }else{
+            const content = await response.json();
+
+            vscode.postMessage({
+                command: "apiError",
+                code: response.status,
+                message: content.message
+            });
         }
     });
 };
 
 const insertModels = (models) => {
     const element = document.querySelector("select[name='models-select']");
+    element.innerHTML = "";
 
     models.forEach(item => {
         const option = document.createElement("option");
         option.value = item.id;
-        option.textContent = item.name;
+        option.textContent = `${item.name} ${item.isFree ? '(free)' : ''}`;
         option.selected = item.isDefault;
 
         element.appendChild(option);
@@ -73,7 +82,7 @@ const sendMessage = async () => {
     const sendMessageBtn = document.querySelector("#send-message");
     const stopStreamingBtn = document.querySelector("#stop-streaming");
 
-    if(messageElm && modelSelectElm){
+    if(messageElm && messageContent && modelSelectElm){
 
         if(!chatId){
             chatId = await createChat(messageContent, modelSelectElm.value);
@@ -90,7 +99,7 @@ const sendMessage = async () => {
         stopStreamingBtn.classList.remove("d-none");
         messageContainerElm.scrollTop = messageContainerElm.scrollHeight;
 
-        await fetch("https://gptmix.ru/api/v1/chats/messages", {
+        await fetch("https://mixgpt.ru/api/v1/chats/messages", {
             method: "POST",
             signal: abortController.signal,
             headers: {
@@ -131,13 +140,15 @@ const sendMessage = async () => {
                 messageContainerElm.scrollTop = messageContainerElm.scrollHeight;
             }
 
-            getHome();
+            await getHome();
         })
         .finally(() => {
             abortController = null;
             sendMessageBtn.classList.remove("d-none");
             stopStreamingBtn.classList.add("d-none");
         });
+    }else{
+        console.log("error");
     }
 };
 
@@ -157,7 +168,7 @@ const stopStreaming = () => {
 };
 
 const createChat = async (message, model) => {
-    return await fetch("https://gptmix.ru/api/v1/chats", {
+    return await fetch("https://mixgpt.ru/api/v1/chats", {
         method: "POST",
         headers: {
             "content-type": "application/json",
@@ -170,7 +181,17 @@ const createChat = async (message, model) => {
     })
     .then(async response => {
         if(response.ok){
-            return response.json();
+            return await response.json();
+        } else {
+            const content = await response.json();
+
+            vscode.postMessage({
+                command: "apiError",
+                code: response.status,
+                message: content.message
+            });
+
+            await getHome();
         }
     });
 };
@@ -271,4 +292,10 @@ document.querySelector("#new-chat")?.addEventListener("click", () => {
         token: jwtToken,
         chatId: null
     });
+});
+
+vscode.postMessage({
+    command: "getHome",
+    token: jwtToken,
+    chatId: null
 });

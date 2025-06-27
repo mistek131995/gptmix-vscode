@@ -6,7 +6,7 @@ const submitLoginInForm = async (event) => {
     const formData = new FormData(event.target);
     const token = formData.get('token');
 
-    await fetch("https://gptmix.ru/api/v1/users/api-tokens/jwt", {
+    await fetch("https://mixgpt.ru/api/v1/users/api-tokens/jwt", {
         method: "POST",
         headers: {
             "content-type": "application/json"
@@ -19,6 +19,14 @@ const submitLoginInForm = async (event) => {
             vscode.postMessage({
                 command: "loginIn",
                 token: await response.text()
+            });
+        } else {
+            const content = await response.json();
+
+            vscode.postMessage({
+                command: "apiError",
+                code: response.status,
+                message: content.message
             });
         }
     });

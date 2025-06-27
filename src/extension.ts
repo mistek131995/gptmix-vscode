@@ -49,9 +49,17 @@ export function activate(context: vscode.ExtensionContext) {
           }
           else if(message.command === "apiError")
           {
-            const code = message.code;
-
-            await apiExceptionHandler(context, webviewView, code);
+            console.log("API error")
+            await apiExceptionHandler(context, webviewView, message);
+          }
+          else if(message.code === "showToast")
+          {
+            if(message.type === "info"){
+              vscode.window.showInformationMessage(message.message)
+            } else {
+              vscode.window.showErrorMessage(message.message);
+            }
+            
           }
         });
       }
@@ -59,10 +67,17 @@ export function activate(context: vscode.ExtensionContext) {
   );
 }
 
-const apiExceptionHandler = async(context: vscode.ExtensionContext, webviewView: vscode.WebviewView, code: any) => {
-  if(code === 401){
+const apiExceptionHandler = async(context: vscode.ExtensionContext, webviewView: vscode.WebviewView, message: any) => {
+  if(message.code === 401){
     vscode.window.showErrorMessage("GPTMix: Ошибка аутентификации");
     webviewView.webview.html = await getLoginInHtml(context, webviewView.webview);
     await context.secrets.delete("token");
+  } 
+  else if(message.code === 404){
+    webviewView.webview.html = await getChatListHtml(context, webviewView.webview);
+  } else if(message.code === 400){
+    vscode.window.showInformationMessage(message.message);
+  } else if(message.code === 500){
+    vscode.window.showErrorMessage("Ошибка сервера");
   }
 };

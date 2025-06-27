@@ -29,7 +29,7 @@ const goHome = (chatId) => {
 const getChatList = async () => {
     const chatListContainer = document.querySelector("#chat-list-container");
 
-    await fetch("https://gptmix.ru/api/v1/chats", {
+    await fetch("https://mixgpt.ru/api/v1/chats", {
         method: "GET",
         headers: {
             "content-type": "application/json",
@@ -53,9 +53,12 @@ const getChatList = async () => {
                 });
             });
         } else {
+            const content = await response.json();
+
             vscode.postMessage({
                 command: "apiError",
-                code: response.status
+                code: response.status,
+                message: content.message
             });
         }
     });
