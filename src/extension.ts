@@ -52,7 +52,7 @@ export function activate(context: vscode.ExtensionContext) {
             console.log("API error")
             await apiExceptionHandler(context, webviewView, message);
           }
-          else if(message.code === "showToast")
+          else if(message.command === "showToast")
           {
             if(message.type === "info"){
               vscode.window.showInformationMessage(message.message)

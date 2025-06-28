@@ -6,6 +6,16 @@ const submitLoginInForm = async (event) => {
     const formData = new FormData(event.target);
     const token = formData.get('token');
 
+    if(!token){
+        vscode.postMessage({
+            command: "showToast",
+            type: "error",
+            message: "Токен не может быть пустым"
+        });
+
+        return;
+    }
+
     await fetch("https://mixgpt.ru/api/v1/users/api-tokens/jwt", {
         method: "POST",
         headers: {

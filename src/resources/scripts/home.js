@@ -148,7 +148,11 @@ const sendMessage = async () => {
             stopStreamingBtn.classList.add("d-none");
         });
     }else{
-        console.log("error");
+        vscode.postMessage({
+            command: "showToast",
+            type: "error",
+            message: "Сообщение не может быть пустым"
+        });
     }
 };
 
