@@ -19,7 +19,7 @@
 ## 🛠 Установка
 
 1. Установите расширение через Marketplace или `.vsix`:
-   - [Marketplace (когда будет опубликовано)](https://marketplace.visualstudio.com/)
+   - [Marketplace](https://marketplace.visualstudio.com/items?itemName=MixGPT.mixgpt)
 2. Перейдите в [https://mixgpt.ru](https://mixgpt.ru) и создайте аккаунт
 3. Скопируйте токен доступа из профиля
 4. В VS Code откройте MixGPT (иконка в левом тулбаре)
