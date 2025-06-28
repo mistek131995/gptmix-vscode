@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 
 export const getChatListHtml = async (context: vscode.ExtensionContext, webviewView: vscode.Webview) => {
-  const htmlPath = vscode.Uri.joinPath(context.extensionUri, 'src', 'resources', 'html', 'chatList.html');
+  const htmlPath = vscode.Uri.joinPath(context.extensionUri, 'dist', 'resources', 'html', 'chatList.html');
 
   const cssUri = webviewView.asWebviewUri(
     vscode.Uri.joinPath(context.extensionUri, 'dist', 'resources', 'css', 'main.css')

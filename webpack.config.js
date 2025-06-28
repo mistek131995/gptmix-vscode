@@ -49,20 +49,8 @@ const extensionConfig = {
     new CopyWebpackPlugin({
       patterns: [
         {
-            from: 'src/resources/css',
-            to: 'resources/css'
-        },
-        {
-          from: 'src/resources/html',
-          to: 'resources/html'
-        },
-        {
-          from: 'src/resources/scripts',
-          to: 'resources/scripts'
-        },
-        {
-          from: 'src/resources/img',
-          to: 'resources/img'
+            from: 'src/resources',
+            to: 'resources'
         }
       ]
     })

@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 
 export const getHomeHtml = async (context: vscode.ExtensionContext, webviewView: vscode.Webview) => {
-  const htmlPath = vscode.Uri.joinPath(context.extensionUri, 'src', 'resources', 'html', 'home.html');
+  const htmlPath = vscode.Uri.joinPath(context.extensionUri, 'dist', 'resources', 'html', 'home.html');
 
   const cssUri = webviewView.asWebviewUri(
     vscode.Uri.joinPath(context.extensionUri, 'dist', 'resources', 'css', 'main.css')
