@@ -4,66 +4,110 @@ import { getHomeHtml } from './web-view/home';
 import { getChatListHtml } from './web-view/chatList';
 
 export function activate(context: vscode.ExtensionContext) {
-  context.subscriptions.push(
-    vscode.window.registerWebviewViewProvider('webviewSidebar', {
-      async resolveWebviewView(webviewView) {
-        webviewView.webview.options = {
-          enableScripts: true,
-          localResourceRoots: [
-            vscode.Uri.joinPath(context.extensionUri, 'dist', 'resources')
-          ]
-        };
+  let currentWebviewView: vscode.WebviewView | undefined;
 
-        if(await context.secrets.get("token")){
-          webviewView.webview.html = await getChatListHtml(context, webviewView.webview);
-        }else{
-          webviewView.webview.html = await getLoginInHtml(context, webviewView.webview);
-        }
+  const webView = vscode.window.registerWebviewViewProvider('webviewSidebar', {
+    async resolveWebviewView(webviewView: vscode.WebviewView) {
+      currentWebviewView = webviewView;
 
+      webviewView.webview.options = {
+        enableScripts: true,
+        localResourceRoots: [
+          vscode.Uri.joinPath(context.extensionUri, 'dist', 'resources')
+        ]
+      };
 
-        webviewView.webview.onDidReceiveMessage(async (message) => {
-          if(message.command === "getChatList"){
-            webviewView.webview.html = await getChatListHtml(context, webviewView.webview);
-            webviewView.webview.postMessage({ 
-              command: message.command,
-              token: await context.secrets.get('token')
-            });
-          }
-          else if(message.command === "getHome"){
-            webviewView.webview.html = await getHomeHtml(context, webviewView.webview);
-            webviewView.webview.postMessage({ 
-              command: message.command,
-              chatId: message.chatId,
-              token: await context.secrets.get('token')
-            });
-          }
-          else if(message.command === "loginIn")
-          {
-             webviewView.webview.html = await getHomeHtml(context, webviewView.webview);
-             await context.secrets.store("token", message.token);
-          }
-          else if(message.command === "loginOut")
-          {
-            webviewView.webview.html = await getLoginInHtml(context, webviewView.webview);
-            await context.secrets.delete("token");
-          }
-          else if(message.command === "apiError")
-          {
-            console.log("API error")
-            await apiExceptionHandler(context, webviewView, message);
-          }
-          else if(message.command === "showToast")
-          {
-            if(message.type === "info"){
-              vscode.window.showInformationMessage(message.message)
-            } else {
-              vscode.window.showErrorMessage(message.message);
-            }
-          }
-        });
+      if(await context.secrets.get("token")){
+        webviewView.webview.html = await getChatListHtml(context, webviewView.webview);
+      }else{
+        webviewView.webview.html = await getLoginInHtml(context, webviewView.webview);
       }
-    })
-  );
+
+
+      webviewView.webview.onDidReceiveMessage(async (message) => {
+        if(message.command === "getChatList"){
+          webviewView.webview.html = await getChatListHtml(context, webviewView.webview);
+          webviewView.webview.postMessage({ 
+            command: message.command,
+            token: await context.secrets.get('token')
+          });
+        }
+        else if(message.command === "getHome"){
+          webviewView.webview.html = await getHomeHtml(context, webviewView.webview);
+          webviewView.webview.postMessage({ 
+            command: message.command,
+            chatId: message.chatId,
+            token: await context.secrets.get('token')
+          });
+        }
+        else if(message.command === "loginIn")
+        {
+           webviewView.webview.html = await getHomeHtml(context, webviewView.webview);
+           await context.secrets.store("token", message.token);
+        }
+        else if(message.command === "loginOut")
+        {
+          webviewView.webview.html = await getLoginInHtml(context, webviewView.webview);
+          await context.secrets.delete("token");
+        }
+        else if(message.command === "apiError")
+        {
+          console.log("API error")
+          await apiExceptionHandler(context, webviewView, message);
+        }
+        else if(message.command === "showToast")
+        {
+          if(message.type === "info"){
+            vscode.window.showInformationMessage(message.message);
+          } else {
+            vscode.window.showErrorMessage(message.message);
+          }
+        }
+      });
+    }
+  });
+
+  let explainCode = vscode.commands.registerCommand('mixgpt.explaincode', async () => {
+    const editor = vscode.window.activeTextEditor;
+
+    if(!editor) {
+      return;
+    }
+
+    if(editor){
+      const selection = editor.selection;
+      const selectedText = editor.document.getText(selection);
+      const token = await context.secrets.get("token");
+
+      if(!token){
+        vscode.window.showInformationMessage("Войдите в аккаунт");
+        return;
+      }
+
+      if(!currentWebviewView){
+        vscode.window.showErrorMessage('Не удалось получить WebviewView, обратитесь в техническую поддержку');
+        return;
+      }
+
+      if(!selectedText){
+        vscode.window.showWarningMessage('Выделите код для объяснения');
+        return;
+      }
+
+      await vscode.commands.executeCommand('workbench.view.extension.webviewSidebarContainer');
+
+      currentWebviewView.webview.html = await getHomeHtml(context, currentWebviewView.webview);
+      currentWebviewView.webview.postMessage({
+
+      });
+
+      vscode.window.showInformationMessage(selectedText);
+    }
+  });
+
+
+  context.subscriptions.push(webView);
+  context.subscriptions.push(explainCode);
 }
 
 const apiExceptionHandler = async(context: vscode.ExtensionContext, webviewView: vscode.WebviewView, message: any) => {
