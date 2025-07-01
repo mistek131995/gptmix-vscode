@@ -2,13 +2,16 @@ import * as vscode from 'vscode';
 import { getLoginInHtml } from './web-view/loginIn';
 import { getHomeHtml } from './web-view/home';
 import { getChatListHtml } from './web-view/chatList';
+import { ChatManager } from './utils/chatManager';
 
 export function activate(context: vscode.ExtensionContext) {
+  const chatManager = new ChatManager();
   let currentWebviewView: vscode.WebviewView | undefined;
 
   const webView = vscode.window.registerWebviewViewProvider('webviewSidebar', {
     async resolveWebviewView(webviewView: vscode.WebviewView) {
       currentWebviewView = webviewView;
+
 
       webviewView.webview.options = {
         enableScripts: true,
@@ -33,12 +36,20 @@ export function activate(context: vscode.ExtensionContext) {
           });
         }
         else if(message.command === "getHome"){
+          const token = await context.secrets.get("token");
+
           webviewView.webview.html = await getHomeHtml(context, webviewView.webview);
-          webviewView.webview.postMessage({ 
-            command: message.command,
-            chatId: message.chatId,
-            token: await context.secrets.get('token')
-          });
+
+          if(message.chatId && token){
+            var result = await chatManager.getChatAsync(message.chatId, token);
+
+            if(result){
+              webviewView.webview.postMessage({
+                command: "getHomeResult",
+                message: result
+              });
+            }
+          }
         }
         else if(message.command === "loginIn")
         {
@@ -52,7 +63,6 @@ export function activate(context: vscode.ExtensionContext) {
         }
         else if(message.command === "apiError")
         {
-          console.log("API error")
           await apiExceptionHandler(context, webviewView, message);
         }
         else if(message.command === "showToast")
@@ -61,6 +71,31 @@ export function activate(context: vscode.ExtensionContext) {
             vscode.window.showInformationMessage(message.message);
           } else {
             vscode.window.showErrorMessage(message.message);
+          }
+        } 
+        else if(message.command === "fetchExplainCode") //Объяснение кода (всегда в новом чате)
+        {
+          const token = await context.secrets.get('token');
+
+          if(token){
+            const onChunk = (message: string, role: string, isEnd: boolean) => {
+              webviewView.webview.postMessage({
+                command: "putMessage",
+                message: message,
+                role: role,
+                isEnd: isEnd
+              });
+            };
+
+            //Возможно чат лучше создавать до перехода на WebView и передавать Id при переходе.
+            const chatId = await chatManager.createChatAsync(message.message, token);
+            webviewView.webview.postMessage({
+              command: "updateChatId",
+              chatId: chatId
+            });
+
+
+            await chatManager.sendMessageAsync(chatId, message.message, token, onChunk);
           }
         }
       });
@@ -98,10 +133,9 @@ export function activate(context: vscode.ExtensionContext) {
 
       currentWebviewView.webview.html = await getHomeHtml(context, currentWebviewView.webview);
       currentWebviewView.webview.postMessage({
-
+        command: "explainCode",
+        message: selectedText
       });
-
-      vscode.window.showInformationMessage(selectedText);
     }
   });
 

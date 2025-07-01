@@ -4,32 +4,6 @@ let chatId = null;
 
 let abortController = null;
 
-const getHome = async () => {
-    await fetch(`https://mixgpt.ru/api/v1/plugins${chatId ? `/${chatId}` : ''}`, {
-        method: "GET",
-        headers: {
-            "content-type": "application/json",
-            "authorization": "Bearer " + jwtToken
-        }
-    })
-    .then(async response => {
-        if(response.ok){
-            response.json().then(data => {
-                insertModels(data.models);
-                insertMessages(data.messages);
-            });
-        }else{
-            const content = await response.json();
-
-            vscode.postMessage({
-                command: "apiError",
-                code: response.status,
-                message: content.message
-            });
-        }
-    });
-};
-
 const insertModels = (models) => {
     const element = document.querySelector("select[name='models-select']");
     element.innerHTML = "";
@@ -270,13 +244,51 @@ document.querySelector("textarea[name='message']")?.addEventListener("keydown", 
 window.addEventListener('message', async event => {
     const message = event.data;
 
-    if(message.command === "getHome"){
-        chatId = message.chatId;
-        jwtToken = message.token;
+    switch(message.command){
+        case "getHome":
+            chatId = message.chatId;
+            jwtToken = message.token;
+    
+            await getHome();
+            break;
+        case "getHomeResult":
+            if(message){
+                insertModels(message.message.models);
+                insertMessages(message.message.messages);
+            }
+            break;
+        case "explainCode":
+            vscode.postMessage({
+                command: "fetchExplainCode",
+                message: message.message
+            });
+            break;
+        case "updateChatId":
+            chatId = message.chatId;
+            break;
+        case "putMessage":
+            putMessage(message.message, message.role);
 
-        await getHome();
+            if(message.isEnd){
+                await getHome();
+            }
+            break;
     }
 });
+
+const putMessage = (message, role) => {
+    const messageContainerElm = document.querySelector("#messages-container");
+    const messages = messageContainerElm.querySelectorAll("div.message");
+    const lastMessage = messages?.[messages.length - 1];
+
+    debugger;
+
+    if(lastMessage?.classList.contains(role)){
+        lastMessage.innerHTML = marked.parse(message);
+    } else {
+        appendMessage(message, role);
+    }
+};
 
 document.getElementById("login-out")?.addEventListener("click", () => {
     vscode.postMessage({
@@ -296,10 +308,4 @@ document.querySelector("#new-chat")?.addEventListener("click", () => {
         token: jwtToken,
         chatId: null
     });
-});
-
-vscode.postMessage({
-    command: "getHome",
-    token: jwtToken,
-    chatId: null
 });

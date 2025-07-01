@@ -106,3 +106,7 @@ input, textarea, select{
 .d-block{
     display: block;
 }
+
+pre code{
+    width: 100%;
+}
