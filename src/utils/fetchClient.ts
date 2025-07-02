@@ -45,13 +45,12 @@ export const postWithStreamingAsync = async (url: string, body: any, token: stri
             }
     
             const chunk = decoder.decode(value, { stream: true });
+
             chunk.split('\n').forEach(line => {
                 if (line.startsWith('data:')) {
                     const message = line.replace('data: ', '');
 
-                    if(message !== ""){
-                        onChunk(message, false);
-                    }  
+                    onChunk(message, false);
                 }
             });
         }

@@ -1,5 +1,4 @@
 import { getAsync, postAsync, postWithStreamingAsync } from "./fetchClient";
-import { generateUUID } from "./uuid";
 
 type Chat = {
     abortController?: AbortController,
