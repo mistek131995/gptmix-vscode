@@ -1,17 +1,10 @@
 import { getAsync, postAsync, postWithStreamingAsync } from "./fetchClient";
 import { generateUUID } from "./uuid";
 
-type Message  = {
-    id: string,
-    content: string,
-    role: string,
-    model: string,
-    created: string
-}
-
 type Chat = {
-    messages: Message[]
-    abortController?: AbortController
+    abortController?: AbortController,
+    question?: string,
+    answer?: string
 }
 
 export class ChatManager{
@@ -23,9 +16,7 @@ export class ChatManager{
             isExplain: model === null
         }, token);
 
-        this.chats.set(chatId, {
-            messages: []
-        });
+        this.chats.set(chatId, {});
 
         return chatId;
     }
@@ -33,57 +24,41 @@ export class ChatManager{
     async sendMessageAsync(chatId: string, message: string, token: string, 
         onChunkCallback: (chunk: string, role: string, isEnd: boolean) => void, model: string | null = null)
     {
-        const chat = this.chats.get(chatId);
+        let chat = this.chats.get(chatId);
 
-        if(chat){
-            const userMessage : Message = {
-                id: generateUUID(),
-                content: message,
-                role: "user",
-                model: "",
-                created: new Date().toISOString()
-            };
-
-            chat.messages.push(userMessage);
-
-            //Отправляем сообщение пользователя для рендера
-            onChunkCallback(userMessage.content, "user", true);
-
-            const onChunk = (message: string, isEnd: boolean) => {
-                const lastMessage = chat.messages[chat.messages.length - 1];
-                lastMessage.content += message;
-
-                onChunkCallback(lastMessage.content, "assistant", isEnd);
-
-                if(isEnd){
-                    console.log("update chat");
-                    return;
-                }
-
-                if(lastMessage && lastMessage.role === "user"){
-                    chat.messages.push({
-                        id: generateUUID(),
-                        content: message,
-                        role: "assistant",
-                        model: "",
-                        created: new Date().toISOString()
-                    });
-
-                    return;
-                }
-            };
-
-            chat.abortController = new AbortController();
-            await postWithStreamingAsync("/api/v1/chats/messages", {
-                chatId: chatId,
-                message: message,
-                isExplain: model === null
-            }, token, onChunk, chat.abortController);
+        if(!chat){
+            chat = {};
+            this.chats.set(chatId, chat);
         }
+
+        chat.question = message;
+
+        //Отправляем сообщение пользователя для рендера
+        onChunkCallback(chat.question, "user", true);
+
+        const onChunk = (message: string, isEnd: boolean) => {
+            chat.answer = (chat.answer || "") + message;
+
+            onChunkCallback(chat.answer, "assistant", isEnd);
+
+            if(isEnd){
+                chat.answer = undefined;
+                chat.question = undefined;
+
+                return;
+            }
+        };
+
+        chat.abortController = new AbortController();
+        await postWithStreamingAsync("/api/v1/chats/messages", {
+            chatId: chatId,
+            message: message,
+            isExplain: model === null
+        }, token, onChunk, chat.abortController);
     }
 
-    async getChatAsync(chatId: string, token: string) : Promise<any>{
-        return await getAsync(`/api/v1/chats/${chatId}`, token);
+    async getChatAsync(chatId: string | undefined, token: string) : Promise<any>{
+        return await getAsync(`/api/v1/plugins${chatId ? `/${chatId}` : ''}`, token);
     }
 
     removeChatAsync(){

@@ -45,89 +45,17 @@ const insertMessages = (messages) => {
 };
 
 const sendMessage = async () => {
-    abortController = new AbortController();
-    const messageElm = document.querySelector("textarea[name='message']");
-    const messageContent = messageElm.value;
-    messageElm.value = "";
+    const message = document.querySelector("textarea[name='message']");
+    const model = document.querySelector("select[name='models-select']");
 
-    const modelSelectElm = document.querySelector("select[name='models-select']");
-    const messageContainerElm = document.querySelector("#messages-container");
+    vscode.postMessage({
+        command: "sendMessage",
+        chatId: chatId,
+        message: message.value,
+        model: model.value
+    });
 
-    const sendMessageBtn = document.querySelector("#send-message");
-    const stopStreamingBtn = document.querySelector("#stop-streaming");
-
-    if(messageElm && messageContent && modelSelectElm){
-
-        if(!chatId){
-            chatId = await createChat(messageContent, modelSelectElm.value);
-            
-            messageContainerElm.classList.remove("justify-content-center");
-            messageContainerElm.classList.add("justify-content-start");
-            messageContainerElm.innerHTML = "";
-        }
-
-        appendMessage(messageContent, "user");
-        appendMessage("", "assistant");
-
-        sendMessageBtn.classList.add("d-none");
-        stopStreamingBtn.classList.remove("d-none");
-        messageContainerElm.scrollTop = messageContainerElm.scrollHeight;
-
-        await fetch("https://mixgpt.ru/api/v1/chats/messages", {
-            method: "POST",
-            signal: abortController.signal,
-            headers: {
-                "content-type": "application/json",
-                "authorization": "Bearer " + jwtToken
-            },
-            body: JSON.stringify({
-                chatId: chatId,
-                message: messageContent,
-                model: modelSelectElm.value
-            })
-        }).then(async response => {
-            if (!response.body) {
-                throw new Error('ReadableStream not supported in this environment.');
-            }
-
-            const reader = response.body.getReader();
-            const decoder = new TextDecoder('utf-8');
-
-            const messageContainerElm = document.querySelector("#messages-container");
-            const lastMessage = messageContainerElm.children[messageContainerElm.children.length - 1];
-
-            while (true) {
-                const { done, value } = await reader.read();
-                if (done){
-                    break;
-                }
-
-        
-                const chunk = decoder.decode(value, { stream: true });
-                chunk.split('\n').forEach(line => {
-                    if (line.startsWith('data:')) {
-                        const message = line.replace('data: ', '');
-                        lastMessage.innerHTML = marked.parse(lastMessage.innerHTML + message);
-                    }
-                });
-
-                messageContainerElm.scrollTop = messageContainerElm.scrollHeight;
-            }
-
-            await getHome();
-        })
-        .finally(() => {
-            abortController = null;
-            sendMessageBtn.classList.remove("d-none");
-            stopStreamingBtn.classList.add("d-none");
-        });
-    }else{
-        vscode.postMessage({
-            command: "showToast",
-            type: "error",
-            message: "Сообщение не может быть пустым"
-        });
-    }
+    message.value = "";
 };
 
 const stopStreaming = () => {
@@ -233,7 +161,6 @@ function addCopyButtons() {
 
 document.querySelector("#send-message")?.addEventListener("click", sendMessage);
 document.querySelector("#stop-streaming")?.addEventListener("click", stopStreaming);
-
 document.querySelector("textarea[name='message']")?.addEventListener("keydown", async (event) => {
     if (event.key === 'Enter' && !event.shiftKey) {
         event.preventDefault();
@@ -245,16 +172,11 @@ window.addEventListener('message', async event => {
     const message = event.data;
 
     switch(message.command){
-        case "getHome":
-            chatId = message.chatId;
-            jwtToken = message.token;
-    
-            await getHome();
-            break;
         case "getHomeResult":
             if(message){
-                insertModels(message.message.models);
-                insertMessages(message.message.messages);
+                chatId = message.chatId;
+                insertModels(message.models);
+                insertMessages(message.messages);
             }
             break;
         case "explainCode":
@@ -281,8 +203,6 @@ const putMessage = (message, role) => {
     const messages = messageContainerElm.querySelectorAll("div.message");
     const lastMessage = messages?.[messages.length - 1];
 
-    debugger;
-
     if(lastMessage?.classList.contains(role)){
         lastMessage.innerHTML = marked.parse(message);
     } else {
@@ -305,7 +225,6 @@ document.querySelector("#chat-list")?.addEventListener("click", () => {
 document.querySelector("#new-chat")?.addEventListener("click", () => {
     vscode.postMessage({
         command: "getHome",
-        token: jwtToken,
         chatId: null
     });
 });

@@ -40,13 +40,15 @@ export function activate(context: vscode.ExtensionContext) {
 
           webviewView.webview.html = await getHomeHtml(context, webviewView.webview);
 
-          if(message.chatId && token){
+          if(token){
             var result = await chatManager.getChatAsync(message.chatId, token);
 
             if(result){
               webviewView.webview.postMessage({
                 command: "getHomeResult",
-                message: result
+                chatId: message.chatId,
+                messages: result.messages,
+                models: result.models
               });
             }
           }
@@ -96,6 +98,23 @@ export function activate(context: vscode.ExtensionContext) {
 
 
             await chatManager.sendMessageAsync(chatId, message.message, token, onChunk);
+          }
+        } 
+        else if(message.command === "sendMessage")
+        {
+          const token = await context.secrets.get('token');
+
+          if(token){
+            const onChunk = (message: string, role: string, isEnd: boolean) => {
+              webviewView.webview.postMessage({
+                command: "putMessage",
+                message: message,
+                role: role,
+                isEnd: isEnd
+              });
+            };
+
+            await chatManager.sendMessageAsync(message.chatId, message.message, token, onChunk, message.model);
           }
         }
       });
