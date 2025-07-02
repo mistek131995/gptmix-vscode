@@ -35,10 +35,16 @@ export class ChatManager{
         //Отправляем сообщение пользователя для рендера
         onChunkCallback(chat.question, "user", true);
 
-        const onChunk = (message: string, isEnd: boolean) => {
-            chat.answer = (chat.answer || "") + message;
+        const onChunk = (chunk: string, isEnd: boolean) => {
+            const content = JSON.parse(chunk)?.choices?.[0]?.delta?.content;
 
-            onChunkCallback(chat.answer, "assistant", isEnd);
+            if(content){
+
+                console.log(content);
+
+                chat.answer = (chat.answer || "") + content;
+                onChunkCallback(chat.answer, "assistant", isEnd);
+            }
 
             if(isEnd){
                 chat.answer = undefined;
@@ -49,7 +55,7 @@ export class ChatManager{
         };
 
         chat.abortController = new AbortController();
-        await postWithStreamingAsync("/api/v1/chats/messages", {
+        await postWithStreamingAsync("/api/v2/chats/messages", {
             chatId: chatId,
             message: message,
             isExplain: model === null

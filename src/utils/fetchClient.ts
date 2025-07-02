@@ -1,3 +1,5 @@
+import { isJsonString } from "./string";
+
 const host = "https://mixgpt.ru";
 
 export const postAsync = async (url: string, body: any, token: string) : Promise<any> => {
@@ -46,11 +48,9 @@ export const postWithStreamingAsync = async (url: string, body: any, token: stri
     
             const chunk = decoder.decode(value, { stream: true });
 
-            chunk.split('\n').forEach(line => {
-                if (line.startsWith('data:')) {
-                    const message = line.replace('data: ', '');
-
-                    onChunk(message, false);
+            chunk.split('data: ').forEach(line => {
+                if (line && isJsonString(line)){
+                    onChunk(line, false);
                 }
             });
         }
@@ -72,3 +72,7 @@ export const getAsync = async (url: string, token: string) : Promise<any> => {
         console.log(response.status);
     });
 };
+
+function hasOnlyNonLetters(str: string) {
+    return str.length > 0 && !/[a-zA-Zа-яА-ЯёЁ]/.test(str);
+}
