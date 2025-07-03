@@ -125,11 +125,7 @@ const appendMessage = (message, role) => {
 
     const div = document.createElement("div");
 
-    if(role === "user"){
-        div.innerHTML = message;
-    }else{
-        div.innerHTML = marked.parse(message);
-    }
+    div.innerHTML = marked.parse(message);
 
     div.className = `message ${role}`;
     messageContainerElm.appendChild(div);
@@ -204,13 +200,19 @@ window.addEventListener('message', async event => {
             }
             break;
         case "explainCode":
+            const rawCode = message.message;
+
+            const safeMarkdown = [
+              "Объясни этот код",
+              "",
+              "~~~~",
+              rawCode,
+              "~~~~"
+            ].join("\n");
+
             vscode.postMessage({
                 command: "fetchExplainCode",
-                message: 
-                `
-                    <p>Объясни этот код</p>
-                    <pre><code>${message.message}</code></pre>
-                `
+                message: safeMarkdown
             });
             break;
         case "updateChatId":
@@ -240,11 +242,7 @@ const putMessage = (message, role) => {
     const lastMessage = messages?.[messages.length - 1];
 
     if(lastMessage?.classList.contains(role)){
-        if(role === "user"){
-            lastMessage.innerHTML = message;
-        }else{
             lastMessage.innerHTML = marked.parse(message);
-        }
     } else {
         appendMessage(message, role);
     }
