@@ -15,6 +15,10 @@
             }
 
             .chat-item{
+                position: relative;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
                 text-wrap: nowrap;
                 min-height: 35px;
                 overflow-x: hidden;
@@ -24,6 +28,20 @@
             .chat-item:hover{
                 background-color: var(--vscode-editor-background);
                 cursor: pointer;
+            }
+
+            .chat-item button
+            {
+                right: 0;
+                position: absolute;
+                height: 27px;
+                width: 27px;
+                display: none;
+            }
+
+            .chat-item:hover button
+            {
+                display: block;
             }
 
             button img{

@@ -27,16 +27,28 @@ const goHome = (chatId) => {
 
 const insertChatList = (chats) => {
     const chatListContainer = document.querySelector("#chat-list-container");
+    const homeIconPath = document.querySelector("button#home img")?.src;
     chatListContainer.innerHTML = "";
 
     chats.forEach(item => {
-        const chatItem = document.createElement("span");
+        const chatItem = document.createElement("div");
         chatItem.classList = "chat-item";
-        chatItem.id = item.id;
-        chatItem.innerHTML = item.title;
-        chatItem.addEventListener("click", () => {
+
+        const label = document.createElement("div");
+        label.id = item.id;
+        label.innerHTML = item.title;
+        label.classList = "w-100";
+        label.addEventListener("click", () => {
             goHome(item.id);
         });
+
+        const button = document.createElement("button");
+        const icon = document.createElement("img");
+        icon.src = homeIconPath.replace("plus-lg.svg", "trash.svg");
+        button.appendChild(icon);
+
+        chatItem.appendChild(label);
+        chatItem.appendChild(button);
         chatListContainer.appendChild(chatItem);
     });
 };
