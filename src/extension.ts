@@ -126,6 +126,10 @@ export function activate(context: vscode.ExtensionContext) {
             await chatManager.sendMessageAsync(message.chatId, message.message, token, onChunk, message.model);
           }
         }
+        else if(message.command === "stopStreaming")
+        {
+          chatManager.abortStreaming(message.chatId);
+        }
       });
     }
   });

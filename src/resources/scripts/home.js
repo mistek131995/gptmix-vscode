@@ -11,6 +11,26 @@ const getHome = async () => {
     });
 };
 
+const preparationToInsertMessages = () => {
+    const messageContainerElm = document.querySelector("#messages-container");
+    messageContainerElm.classList.remove("justify-content-center");
+    messageContainerElm.classList.add("justify-content-start");
+    messageContainerElm.innerHTML = "";
+};
+
+const switchChatButton = (isEnd) => {
+    const sendMessageButton = document.querySelector("button#send-message");
+    const stopStreamingButton = document.querySelector("button#stop-streaming");
+
+    if(isEnd){
+        sendMessageButton.classList.remove("d-none");
+        stopStreamingButton.classList.add("d-none");
+    }else{
+        sendMessageButton.classList.add("d-none");
+        stopStreamingButton.classList.remove("d-none");
+    }
+};
+
 const insertModels = (models) => {
     const element = document.querySelector("select[name='models-select']");
     element.innerHTML = "";
@@ -66,18 +86,12 @@ const sendMessage = async () => {
 };
 
 const stopStreaming = () => {
-    const sendMessageBtn = document.querySelector("#send-message");
-    const stopStreamingBtn = document.querySelector("#stop-streaming");
-    const messageContainerElm = document.querySelector("#messages-container");
+    switchChatButton(true);
 
-    abortController?.abort();
-
-    sendMessageBtn.classList.remove("d-none");
-    stopStreamingBtn.classList.add("d-none");
-
-    if (messageContainerElm?.lastElementChild) {
-        messageContainerElm.removeChild(messageContainerElm.lastElementChild);
-    }
+    vscode.postMessage({
+        command: "stopStreaming",
+        chatId: chatId
+    });
 };
 
 const createChat = async (message, model) => {
@@ -194,8 +208,11 @@ window.addEventListener('message', async event => {
             break;
         case "updateChatId":
             chatId = message.chatId;
+            preparationToInsertMessages();
             break;
         case "putMessage":
+
+            switchChatButton(message.isEnd);
             putMessage(message.message, message.role);
 
             if(message.isEnd){
@@ -210,9 +227,7 @@ const putMessage = (message, role) => {
     const messages = messageContainerElm.querySelectorAll("div.message");
 
     if(messages.length === 0){
-        messageContainerElm.classList.remove("justify-content-center");
-        messageContainerElm.classList.add("justify-content-start");
-        messageContainerElm.innerHTML = "";
+        preparationToInsertMessages();
     }
 
     const lastMessage = messages?.[messages.length - 1];
