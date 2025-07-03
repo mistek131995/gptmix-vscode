@@ -4,6 +4,13 @@ let chatId = null;
 
 let abortController = null;
 
+const getHome = async () => {
+    vscode.postMessage({
+        command: "getHome",
+        chatId: chatId
+    });
+};
+
 const insertModels = (models) => {
     const element = document.querySelector("select[name='models-select']");
     element.innerHTML = "";
@@ -201,6 +208,13 @@ window.addEventListener('message', async event => {
 const putMessage = (message, role) => {
     const messageContainerElm = document.querySelector("#messages-container");
     const messages = messageContainerElm.querySelectorAll("div.message");
+
+    if(messages.length === 0){
+        messageContainerElm.classList.remove("justify-content-center");
+        messageContainerElm.classList.add("justify-content-start");
+        messageContainerElm.innerHTML = "";
+    }
+
     const lastMessage = messages?.[messages.length - 1];
 
     if(lastMessage?.classList.contains(role)){
@@ -222,9 +236,8 @@ document.querySelector("#chat-list")?.addEventListener("click", () => {
     });
 });
 
-document.querySelector("#new-chat")?.addEventListener("click", () => {
-    vscode.postMessage({
-        command: "getHome",
-        chatId: null
-    });
+document.querySelector("#new-chat")?.addEventListener("click", async () => {
+    chatId = null;
+
+    await getHome();
 });

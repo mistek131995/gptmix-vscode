@@ -41,8 +41,9 @@ export const postWithStreamingAsync = async (url: string, body: any, token: stri
 
         while (true) {
             const { done, value } = await reader.read();
+
             if (done){
-                onChunk("", true);
+                onChunk("{}", true);
                 break;
             }
     
@@ -72,7 +73,3 @@ export const getAsync = async (url: string, token: string) : Promise<any> => {
         console.log(response.status);
     });
 };
-
-function hasOnlyNonLetters(str: string) {
-    return str.length > 0 && !/[a-zA-Zа-яА-ЯёЁ]/.test(str);
-}

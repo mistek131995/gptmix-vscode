@@ -33,18 +33,17 @@ export class ChatManager{
         chat.question = message;
 
         //Отправляем сообщение пользователя для рендера
-        onChunkCallback(chat.question, "user", true);
+        onChunkCallback(chat.question, "user", false);
 
         const onChunk = (chunk: string, isEnd: boolean) => {
             const content = JSON.parse(chunk)?.choices?.[0]?.delta?.content;
 
-            if(content){
-
-                console.log(content);
-
-                chat.answer = (chat.answer || "") + content;
-                onChunkCallback(chat.answer, "assistant", isEnd);
+            if(!content && !isEnd){
+                return;
             }
+
+            chat.answer = (chat.answer || "") + (content || "");
+            onChunkCallback(chat.answer, "assistant", isEnd);
 
             if(isEnd){
                 chat.answer = undefined;
