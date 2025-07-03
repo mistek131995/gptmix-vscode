@@ -1,8 +1,5 @@
 const vscode = acquireVsCodeApi();
-let jwtToken = null;
 let chatId = null;
-
-let abortController = null;
 
 const getHome = async () => {
     vscode.postMessage({
@@ -127,7 +124,13 @@ const appendMessage = (message, role) => {
     const messageContainerElm = document.querySelector("#messages-container");
 
     const div = document.createElement("div");
-    div.innerHTML = marked.parse(message);
+
+    if(role === "user"){
+        div.innerHTML = message;
+    }else{
+        div.innerHTML = marked.parse(message);
+    }
+
     div.className = `message ${role}`;
     messageContainerElm.appendChild(div);
 };
@@ -203,7 +206,11 @@ window.addEventListener('message', async event => {
         case "explainCode":
             vscode.postMessage({
                 command: "fetchExplainCode",
-                message: message.message
+                message: 
+                `
+                    <p>Объясни этот код</p>
+                    <pre><code>${message.message}</code></pre>
+                `
             });
             break;
         case "updateChatId":
@@ -233,7 +240,11 @@ const putMessage = (message, role) => {
     const lastMessage = messages?.[messages.length - 1];
 
     if(lastMessage?.classList.contains(role)){
-        lastMessage.innerHTML = marked.parse(message);
+        if(role === "user"){
+            lastMessage.innerHTML = message;
+        }else{
+            lastMessage.innerHTML = marked.parse(message);
+        }
     } else {
         appendMessage(message, role);
     }
