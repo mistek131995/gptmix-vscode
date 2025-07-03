@@ -80,6 +80,18 @@ export function activate(context: vscode.ExtensionContext) {
           const token = await context.secrets.get('token');
 
           if(token){
+            var result = await chatManager.getChatAsync(undefined, token);
+
+            if(result){
+              webviewView.webview.postMessage({
+                command: "getHomeResult",
+                chatId: message.chatId,
+                messages: result.messages,
+                models: result.models
+              });
+            }
+
+
             const onChunk = (message: string, role: string, isEnd: boolean) => {
               webviewView.webview.postMessage({
                 command: "putMessage",
