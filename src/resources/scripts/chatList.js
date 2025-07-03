@@ -1,5 +1,4 @@
 const vscode = acquireVsCodeApi();
-let jwtToken = null;
 
 document.querySelector("#login-out")?.addEventListener("click", () => {
     vscode.postMessage({
@@ -12,10 +11,10 @@ document.querySelector("#home")?.addEventListener("click", () => goHome(null));
 window.addEventListener("message", async event => {
     const message = event.data;
 
-    if (message.command === 'getChatList') {
-        jwtToken = message.token;
-
-        await getChatList();
+    if (message.command === 'getChatListResult') {
+        if(message?.data?.chats){
+            insertChatList(message.data.chats);
+        }
     }
 });
 
@@ -26,41 +25,19 @@ const goHome = (chatId) => {
     });
 };
 
-const getChatList = async () => {
+const insertChatList = (chats) => {
     const chatListContainer = document.querySelector("#chat-list-container");
+    chatListContainer.innerHTML = "";
 
-    await fetch("https://mixgpt.ru/api/v1/chats", {
-        method: "GET",
-        headers: {
-            "content-type": "application/json",
-            "authorization": "Bearer " + jwtToken
-        }
-    })
-    .then(async response => {
-        if(response.ok){
-            await response.json().then(data => {
-                chatListContainer.innerHTML = "";
-
-                data.chats.forEach(item => {
-                    const chatItem = document.createElement("span");
-                    chatItem.classList = "chat-item";
-                    chatItem.id = item.id;
-                    chatItem.innerHTML = item.title;
-                    chatItem.addEventListener("click", () => {
-                        goHome(item.id);
-                    });
-                    chatListContainer.appendChild(chatItem);
-                });
-            });
-        } else {
-            const content = await response.json();
-
-            vscode.postMessage({
-                command: "apiError",
-                code: response.status,
-                message: content.message
-            });
-        }
+    chats.forEach(item => {
+        const chatItem = document.createElement("span");
+        chatItem.classList = "chat-item";
+        chatItem.id = item.id;
+        chatItem.innerHTML = item.title;
+        chatItem.addEventListener("click", () => {
+            goHome(item.id);
+        });
+        chatListContainer.appendChild(chatItem);
     });
 };
 

@@ -48,6 +48,7 @@ export class ChatManager{
             if(isEnd){
                 chat.answer = undefined;
                 chat.question = undefined;
+                chat.abortController = undefined;
 
                 return;
             }
@@ -61,15 +62,23 @@ export class ChatManager{
         }, token, onChunk, chat.abortController);
     }
 
-    async getChatAsync(chatId: string | undefined, token: string) : Promise<any>{
+    async getChatAsync(chatId: string | undefined, token: string) : Promise<any>
+    {
         return await getAsync(`/api/v1/plugins${chatId ? `/${chatId}` : ''}`, token);
     }
 
-    removeChatAsync(){
+    async getChatList(token: string) : Promise<any>
+    {
+        return await getAsync("/api/v1/chats", token);
+    }
+
+    removeChatAsync()
+    {
 
     }
 
-    abortStreaming(chatId: string){
+    abortStreaming(chatId: string)
+    {
         const chat = this.chats.get(chatId);
 
         if(chat){

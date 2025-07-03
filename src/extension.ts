@@ -29,18 +29,25 @@ export function activate(context: vscode.ExtensionContext) {
 
       webviewView.webview.onDidReceiveMessage(async (message) => {
         if(message.command === "getChatList"){
-          webviewView.webview.html = await getChatListHtml(context, webviewView.webview);
-          webviewView.webview.postMessage({ 
-            command: message.command,
-            token: await context.secrets.get('token')
-          });
+          const token = await context.secrets.get("token");
+
+          if(token){
+            webviewView.webview.html = await getChatListHtml(context, webviewView.webview);
+
+
+
+            webviewView.webview.postMessage({ 
+              command: "getChatListResult",
+              data: await chatManager.getChatList(token)
+            });
+          }
         }
         else if(message.command === "getHome"){
           const token = await context.secrets.get("token");
 
-          webviewView.webview.html = await getHomeHtml(context, webviewView.webview);
-
           if(token){
+            webviewView.webview.html = await getHomeHtml(context, webviewView.webview);
+
             var result = await chatManager.getChatAsync(message.chatId, token);
 
             if(result){
