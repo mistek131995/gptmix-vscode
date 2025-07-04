@@ -1,4 +1,5 @@
 import { isJsonString } from "./string";
+import * as vscode from "vscode";
 
 const host = "https://mixgpt.ru";
 
@@ -33,7 +34,8 @@ export const postWithStreamingAsync = async (url: string, body: any, token: stri
         body: JSON.stringify(body)
     }).then(async (response) => {
         if (!response.body) {
-            throw new Error('ReadableStream not supported in this environment.');
+            vscode.commands.executeCommand("mixgpt.httperror", response);
+            return;
         }
 
         const reader = response.body.getReader();
@@ -69,6 +71,8 @@ export const getAsync = async (url: string, token: string) : Promise<any> => {
         if(response.ok){
             return await response.json();
         }
+
+        vscode.commands.executeCommand("mixgpt.httperror", response);
     });
 };
 
@@ -84,6 +88,6 @@ export const deleteAsync = async(url: string, token: string) : Promise<any> => {
             return await response.json();
         }
 
-        console.log(response.status);
+        vscode.commands.executeCommand("mixgpt.httperror", response);
     });
 };

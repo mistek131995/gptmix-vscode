@@ -28,7 +28,8 @@ export function activate(context: vscode.ExtensionContext) {
 
 
       webviewView.webview.onDidReceiveMessage(async (message) => {
-        if(message.command === "getChatList"){
+        if(message.command === "getChatList")
+        {
           const token = await context.secrets.get("token");
 
           if(token){
@@ -40,7 +41,8 @@ export function activate(context: vscode.ExtensionContext) {
             });
           }
         }
-        else if(message.command === "getHome"){
+        else if(message.command === "getHome")
+        {
           const token = await context.secrets.get("token");
 
           if(token){
@@ -147,7 +149,8 @@ export function activate(context: vscode.ExtensionContext) {
         {
           chatManager.abortStreaming(message.chatId);
         }
-        else if(message.command === "deleteChat"){
+        else if(message.command === "deleteChat")
+        {
           const token = await context.secrets.get("token");
 
           if(token){
@@ -202,9 +205,31 @@ export function activate(context: vscode.ExtensionContext) {
     }
   });
 
+  let httpError = vscode.commands.registerCommand("mixgpt.httperror", async (data: Response) => {
+    if(!currentWebviewView){
+      return;
+    }
+
+    const response = await data.json() as { message: string };
+
+    if(data.status === 401){
+      vscode.window.showErrorMessage("GPTMix: Ошибка аутентификации");
+      currentWebviewView.webview.html = await getLoginInHtml(context, currentWebviewView.webview);
+      await context.secrets.delete("token");
+    } 
+    else if(data.status === 404){
+      currentWebviewView.webview.html = await getChatListHtml(context, currentWebviewView.webview);
+    } else if(data.status === 400){
+      vscode.window.showInformationMessage(response.message);
+    } else if(data.status === 500){
+      vscode.window.showErrorMessage("Ошибка сервера");
+    }
+  });
+
 
   context.subscriptions.push(webView);
   context.subscriptions.push(explainCode);
+  context.subscriptions.push(httpError);
 }
 
 const apiExceptionHandler = async(context: vscode.ExtensionContext, webviewView: vscode.WebviewView, message: any) => {

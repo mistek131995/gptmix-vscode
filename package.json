@@ -33,6 +33,10 @@
       {
         "command": "mixgpt.explaincode",
         "title": "Объясни код"
+      },
+      {
+        "command": "mixgpt.httperror",
+        "title": "Обработчик ошибо HTTP"
       }
     ],
     "viewsContainers": {
