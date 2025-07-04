@@ -64,6 +64,17 @@ export function activate(context: vscode.ExtensionContext) {
         {
            webviewView.webview.html = await getHomeHtml(context, webviewView.webview);
            await context.secrets.store("token", message.token);
+
+           var result = await chatManager.getChatAsync(message.chatId, message.token);
+
+           if(result){
+            webviewView.webview.postMessage({
+              command: "getHomeResult",
+              chatId: message.chatId,
+              messages: result.messages,
+              models: result.models
+            });
+          }
         }
         else if(message.command === "loginOut")
         {

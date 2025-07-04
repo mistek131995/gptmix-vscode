@@ -34,8 +34,8 @@ const insertChatList = (chats) => {
         const chatItem = document.createElement("div");
         chatItem.classList = "chat-item";
         chatItem.id = item.id;
-        chatItem.addEventListener("click", (event) => {
-            goHome(event.id);
+        chatItem.addEventListener("click", () => {
+            goHome(item.id);
         });
 
         const label = document.createElement("div");

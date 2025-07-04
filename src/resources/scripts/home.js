@@ -91,35 +91,6 @@ const stopStreaming = () => {
     });
 };
 
-const createChat = async (message, model) => {
-    return await fetch("https://mixgpt.ru/api/v1/chats", {
-        method: "POST",
-        headers: {
-            "content-type": "application/json",
-            "authorization": "Bearer " + jwtToken
-        },
-        body: JSON.stringify({
-            message: message,
-            model: model
-        })
-    })
-    .then(async response => {
-        if(response.ok){
-            return await response.json();
-        } else {
-            const content = await response.json();
-
-            vscode.postMessage({
-                command: "apiError",
-                code: response.status,
-                message: content.message
-            });
-
-            await getHome();
-        }
-    });
-};
-
 const appendMessage = (message, role) => {
     const messageContainerElm = document.querySelector("#messages-container");
 
@@ -264,9 +235,4 @@ document.querySelector("#new-chat")?.addEventListener("click", async () => {
     chatId = null;
 
     await getHome();
-});
-
-vscode.postMessage({
-    command: "getHome",
-    chatId: chatId
 });
