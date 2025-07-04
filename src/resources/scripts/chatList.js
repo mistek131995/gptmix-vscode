@@ -33,19 +33,27 @@ const insertChatList = (chats) => {
     chats.forEach(item => {
         const chatItem = document.createElement("div");
         chatItem.classList = "chat-item";
+        chatItem.id = item.id;
+        chatItem.addEventListener("click", (event) => {
+            goHome(event.id);
+        });
 
         const label = document.createElement("div");
-        label.id = item.id;
         label.innerHTML = item.title;
         label.classList = "w-100";
-        label.addEventListener("click", () => {
-            goHome(item.id);
-        });
 
         const button = document.createElement("button");
         const icon = document.createElement("img");
         icon.src = homeIconPath.replace("plus-lg.svg", "trash.svg");
         button.appendChild(icon);
+        button.addEventListener("click", (event) => {
+            event.stopPropagation();
+
+            vscode.postMessage({
+                command: "deleteChat",
+                chatId: event.currentTarget.parentElement.id
+            });
+        });
 
         chatItem.appendChild(label);
         chatItem.appendChild(button);

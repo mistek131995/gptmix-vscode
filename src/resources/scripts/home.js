@@ -265,3 +265,8 @@ document.querySelector("#new-chat")?.addEventListener("click", async () => {
 
     await getHome();
 });
+
+vscode.postMessage({
+    command: "getHome",
+    chatId: chatId
+});

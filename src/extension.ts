@@ -34,8 +34,6 @@ export function activate(context: vscode.ExtensionContext) {
           if(token){
             webviewView.webview.html = await getChatListHtml(context, webviewView.webview);
 
-
-
             webviewView.webview.postMessage({ 
               command: "getChatListResult",
               data: await chatManager.getChatList(token)
@@ -148,6 +146,20 @@ export function activate(context: vscode.ExtensionContext) {
         else if(message.command === "stopStreaming")
         {
           chatManager.abortStreaming(message.chatId);
+        }
+        else if(message.command === "deleteChat"){
+          const token = await context.secrets.get("token");
+
+          if(token){
+            const result = await chatManager.deleteChatAsync(message.chatId, token);
+
+            if(result){
+              webviewView.webview.postMessage({ 
+                command: "getChatListResult",
+                data: await chatManager.getChatList(token)
+              });
+            }
+          }
         }
       });
     }

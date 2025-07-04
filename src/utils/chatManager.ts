@@ -1,4 +1,4 @@
-import { getAsync, postAsync, postWithStreamingAsync } from "./fetchClient";
+import { deleteAsync, getAsync, postAsync, postWithStreamingAsync } from "./fetchClient";
 
 type Chat = {
     abortController?: AbortController,
@@ -72,9 +72,9 @@ export class ChatManager{
         return await getAsync("/api/v1/chats", token);
     }
 
-    removeChatAsync()
+    async deleteChatAsync(chatId: string, token: string) : Promise<any>
     {
-
+        return await deleteAsync(`/api/v1/chats/${chatId}`, token);
     }
 
     abortStreaming(chatId: string)

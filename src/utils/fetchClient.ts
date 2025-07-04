@@ -69,6 +69,20 @@ export const getAsync = async (url: string, token: string) : Promise<any> => {
         if(response.ok){
             return await response.json();
         }
+    });
+};
+
+export const deleteAsync = async(url: string, token: string) : Promise<any> => {
+    return fetch(`${host}${url}`, {
+        method: "DELETE",
+        headers: {
+            "content-type": "application/json",
+            "authorization": "Bearer " + token
+        },
+    }).then(async (response) => {
+        if(response.ok){
+            return await response.json();
+        }
 
         console.log(response.status);
     });
