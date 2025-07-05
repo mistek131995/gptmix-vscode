@@ -12,14 +12,11 @@ export const postAsync = async (url: string, body: any, token: string) : Promise
         },
         body: JSON.stringify(body)
     }).then(async response => {
-        const content = await response.json();
-
         if(response.ok){
-            return content;
-        } else {
-            //Обрабатываем ошибку их ответа
-            console.log(content);
+            return await response.json();;
         }
+
+        vscode.commands.executeCommand("mixgpt.httperror", response);
     });
 };
 

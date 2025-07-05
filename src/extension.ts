@@ -223,6 +223,9 @@ export function activate(context: vscode.ExtensionContext) {
 
     const response = await data.json() as { message: string };
 
+    console.log(data.status);
+    console.log(response.message);
+
     if(data.status === 401){
       vscode.window.showErrorMessage("GPTMix: Ошибка аутентификации");
       currentWebviewView.webview.html = await getLoginInHtml(context, currentWebviewView.webview);
