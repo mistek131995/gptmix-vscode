@@ -4,7 +4,7 @@
   "description": "AI chat for VS Code",
   "icon": "icon.png",
   "publisher": "MixGPT",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "license": "GPL-3.0",
   "repository": {
     "type": "git",
