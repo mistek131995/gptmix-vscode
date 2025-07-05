@@ -138,6 +138,10 @@ export function activate(context: vscode.ExtensionContext) {
             if(!message.chatId){
               message.chatId = await chatManager.createChatAsync(message.message, token);
 
+              if(!message.chatId){
+                return;
+              }
+
               webviewView.webview.postMessage({
                 command: "updateChatId",
                 chatId: message.chatId
@@ -222,9 +226,6 @@ export function activate(context: vscode.ExtensionContext) {
     }
 
     const response = await data.json() as { message: string };
-
-    console.log(data.status);
-    console.log(response.message);
 
     if(data.status === 401){
       vscode.window.showErrorMessage("GPTMix: Ошибка аутентификации");
