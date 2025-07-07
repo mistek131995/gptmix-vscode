@@ -28,15 +28,17 @@ const switchChatButton = (isEnd) => {
     }
 };
 
-const insertModels = (models) => {
+const insertModels = (models, lastMessageModel) => {
     const element = document.querySelector("select[name='models-select']");
     element.innerHTML = "";
+
+    console.log(lastMessageModel)
 
     models.forEach(item => {
         const option = document.createElement("option");
         option.value = item.id;
         option.textContent = `${item.name} ${item.isFree ? '(free)' : ''}`;
-        option.selected = item.isDefault;
+        option.selected = lastMessageModel ? lastMessageModel === item.id : item.isDefault;
 
         element.appendChild(option);
     });
@@ -166,7 +168,9 @@ window.addEventListener('message', async event => {
         case "getHomeResult":
             if(message){
                 chatId = message.chatId;
-                insertModels(message.models);
+                const lastMessage = message.messages ? message.messages[message.messages.length -1] : null;
+
+                insertModels(message.models, lastMessage?.model);
                 insertMessages(message.messages);
             }
             break;
