@@ -35,6 +35,10 @@ export const getHomeHtml = async (context: vscode.ExtensionContext, webviewView:
     vscode.Uri.joinPath(context.extensionUri, 'dist', 'resources', 'img', 'stop.svg')
   );
 
+  const attachFileIcon = webviewView.asWebviewUri(
+    vscode.Uri.joinPath(context.extensionUri, 'dist', 'resources', 'img', 'paperclip.svg')
+  );
+
   const htmlBytes = await vscode.workspace.fs.readFile(htmlPath);
   let htmlContent = Buffer.from(htmlBytes).toString('utf8');
 
@@ -47,5 +51,6 @@ export const getHomeHtml = async (context: vscode.ExtensionContext, webviewView:
   .replace(/{{newChatIcon}}/g, newChatIcon.toString())
   .replace(/{{chatListIcon}}/g, chatListIcon.toString())
   .replace(/{{sendMessageIcon}}/g, sendMessageIcon.toString())
-  .replace(/{{stopStreamingIcon}}/g, stopStreamingIcon.toString());
+  .replace(/{{stopStreamingIcon}}/g, stopStreamingIcon.toString())
+  .replace(/{{attachFileIcon}}/g, attachFileIcon.toString());
 };
