@@ -32,8 +32,6 @@ const insertModels = (models, lastMessageModel) => {
     const element = document.querySelector("select[name='models-select']");
     element.innerHTML = "";
 
-    console.log(lastMessageModel)
-
     models.forEach(item => {
         const option = document.createElement("option");
         option.value = item.id;
@@ -73,6 +71,7 @@ const insertMessages = (messages) => {
 const sendMessage = async () => {
     const message = document.querySelector("textarea[name='message']");
     const model = document.querySelector("select[name='models-select']");
+    const fileInput = document.querySelector("#file-input");
 
     vscode.postMessage({
         command: "sendMessage",
@@ -82,6 +81,7 @@ const sendMessage = async () => {
     });
 
     message.value = "";
+    fileInput.value = "";
 };
 
 const stopStreaming = () => {
@@ -239,4 +239,26 @@ document.querySelector("#new-chat")?.addEventListener("click", async () => {
     chatId = null;
 
     await getHome();
+});
+
+document.querySelector("#attach-file").addEventListener("click", () => {
+    document.querySelector("#file-input").click();
+});
+
+document.querySelector("#file-input").addEventListener("change", (event) => {
+    const fileListContainer = document.querySelector("#file-list");
+
+    if(!fileListContainer){
+        return;
+    }
+
+    fileListContainer.innerText = "";
+
+    Array.from(event.target.files).forEach(file => {
+        const item = document.createElement("div");
+        item.innerText = file.name;
+        item.className = "me-2";
+
+        fileListContainer.appendChild(item);
+    });
 });
