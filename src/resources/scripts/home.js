@@ -72,16 +72,32 @@ const sendMessage = async () => {
     const message = document.querySelector("textarea[name='message']");
     const model = document.querySelector("select[name='models-select']");
     const fileInput = document.querySelector("#file-input");
+    const fileListContainer = document.querySelector("#file-list");
+
+    const files = await Promise.all(
+        Array.from(fileInput.files).map(async file => {
+            const content = await file.arrayBuffer();
+            return {
+                name: file.name,
+                type: file.type,
+                content: Array.from(new Uint8Array(content))
+            };
+        })
+    );
+
+    console.log(files);
 
     vscode.postMessage({
         command: "sendMessage",
         chatId: chatId,
         message: message.value,
+        files: files,
         model: model.value
     });
 
     message.value = "";
     fileInput.value = "";
+    fileListContainer.innerText = "";
 };
 
 const stopStreaming = () => {
