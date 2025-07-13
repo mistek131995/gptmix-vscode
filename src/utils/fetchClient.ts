@@ -20,15 +20,14 @@ export const postAsync = async (url: string, body: any, token: string) : Promise
     });
 };
 
-export const postWithStreamingAsync = async (url: string, body: any, token: string, onChunk: (chunk: string, isEnd: boolean) => void, abortController: AbortController) : Promise<any> => {
+export const postWithStreamingAsync = async (url: string, body: FormData, token: string, onChunk: (chunk: string, isEnd: boolean) => void, abortController: AbortController) : Promise<any> => {
     fetch(`${host}${url}`, {
         method: "POST",
         signal: abortController.signal,
         headers: {
-            "content-type": "application/json",
             "authorization": `Bearer ${token}`
         },
-        body: JSON.stringify(body)
+        body: body
     }).then(async (response) => {
         if (!response.body) {
             vscode.commands.executeCommand("mixgpt.httperror", response);

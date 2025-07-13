@@ -55,13 +55,14 @@ export class ChatManager{
         };
 
         chat.abortController = new AbortController();
+
+        const formData = new FormData();
+        formData.append("chatId", chatId);
+        formData.append("message", message);
+        formData.append("model", model);
+        formData.append("isExplain", model === null);
         
-        await postWithStreamingAsync("/api/v2/chats/messages", {
-            chatId: chatId,
-            message: message,
-            model: model,
-            isExplain: model === null
-        }, token, onChunk, chat.abortController);
+        await postWithStreamingAsync("/api/v3/chats/messages", formData, token, onChunk, chat.abortController);
     }
 
     async getChatAsync(chatId: string | undefined, token: string) : Promise<any>

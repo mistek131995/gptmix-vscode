@@ -85,8 +85,6 @@ const sendMessage = async () => {
         })
     );
 
-    console.log(files);
-
     vscode.postMessage({
         command: "sendMessage",
         chatId: chatId,
