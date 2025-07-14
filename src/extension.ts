@@ -2,7 +2,7 @@ import * as vscode from 'vscode';
 import { getLoginInHtml } from './web-view/loginIn';
 import { getHomeHtml } from './web-view/home';
 import { getChatListHtml } from './web-view/chatList';
-import { ChatManager } from './utils/chatManager';
+import { ChatManager } from './utils/chatManager/chatManager';
 
 export function activate(context: vscode.ExtensionContext) {
   const chatManager = new ChatManager();
@@ -157,7 +157,7 @@ export function activate(context: vscode.ExtensionContext) {
               });
             };
 
-            await chatManager.sendMessageAsync(message.chatId, message.message, token, onChunk, message.model);
+            await chatManager.sendMessageAsync(message.chatId, message.message, token, onChunk, message.model, message.files);
           }
         }
         else if(message.command === "stopStreaming")

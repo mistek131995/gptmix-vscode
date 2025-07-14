@@ -1,4 +1,5 @@
-import { deleteAsync, getAsync, postAsync, postWithStreamingAsync } from "./fetchClient";
+import { deleteAsync, getAsync, postAsync, postWithStreamingAsync } from "../fetchClient";
+import type {File} from "./models/File";
 
 type Chat = {
     abortController?: AbortController,
@@ -21,9 +22,11 @@ export class ChatManager{
     }
 
     async sendMessageAsync(chatId: string, message: string, token: string, 
-        onChunkCallback: (chunk: string, role: string, isEnd: boolean) => void, model: string | null = null)
+        onChunkCallback: (chunk: string, role: string, isEnd: boolean) => void, model: string | null = null, files: File[] = [])
     {
         let chat = this.chats.get(chatId);
+
+        console.log(files);
 
         if(!chat){
             chat = {};
@@ -61,6 +64,10 @@ export class ChatManager{
         formData.append("message", message);
         formData.append("model", model);
         formData.append("isExplain", model === null);
+
+        files?.forEach(file => {
+            formData.append("files", new Blob(file.content), file.name);
+        });
         
         await postWithStreamingAsync("/api/v3/chats/messages", formData, token, onChunk, chat.abortController);
     }
