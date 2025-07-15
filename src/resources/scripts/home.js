@@ -234,14 +234,13 @@ window.addEventListener('message', async event => {
             preparationToInsertMessages();
             break;
         case "putMessage":
+            if(chatId === message.chatId){
+                switchChatButton(message.isEnd);
+                putMessage(message.message, message.role, message.files);
 
-
-
-            switchChatButton(message.isEnd);
-            putMessage(message.message, message.role, message.files);
-
-            if(message.isEnd){
-                await getHome();
+                if(message.isEnd){
+                    await getHome();
+                }
             }
             break;
     }

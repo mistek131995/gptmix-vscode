@@ -150,6 +150,7 @@ export function activate(context: vscode.ExtensionContext) {
 
             const onChunk = (content: string, role: string, isEnd: boolean) => {
               webviewView.webview.postMessage({
+                chatId: message.chatId,
                 command: "putMessage",
                 message: content,
                 files: message.files.map((file: any) => {return {id: "", name: file.name}}),
