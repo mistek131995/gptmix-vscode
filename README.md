@@ -19,7 +19,7 @@
 ---
 
 
-![Demo](https://mixgpt.ru/ChatExample.gif)
+![Demo](assets/ChatExample.gif)
 
 
 ## 🛠 Установка
