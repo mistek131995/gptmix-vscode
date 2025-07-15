@@ -26,8 +26,6 @@ export class ChatManager{
     {
         let chat = this.chats.get(chatId);
 
-        console.log(files);
-
         if(!chat){
             chat = {};
             this.chats.set(chatId, chat);

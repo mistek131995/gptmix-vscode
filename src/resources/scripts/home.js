@@ -51,7 +51,7 @@ const insertMessages = (messages) => {
         element.innerHTML = "";
 
         messages.forEach(message => {
-            appendMessage(message.content, message.role);
+            appendMessage(message.content, message.role, message.files);
         });
 
         addCopyButtons();
@@ -107,14 +107,32 @@ const stopStreaming = () => {
     });
 };
 
-const appendMessage = (message, role) => {
+const appendMessage = (message, role, files) => {
     const messageContainerElm = document.querySelector("#messages-container");
 
     const div = document.createElement("div");
 
     div.innerHTML = marked.parse(message);
-
     div.className = `message ${role}`;
+
+    if(files.length > 0){
+        const fileListDiv = document.createElement("div");
+        const line = document.createElement("hr");
+
+        fileListDiv.className = "d-flex flex-wrap pb-1";
+
+        files.forEach(file => {
+            const itemDiv = document.createElement("div");
+            itemDiv.innerText = file.name;
+            itemDiv.id = file.id;
+
+            fileListDiv.appendChild(itemDiv);
+        });
+
+        div.appendChild(line);
+        div.appendChild(fileListDiv);
+    }
+
     messageContainerElm.appendChild(div);
 };
 
