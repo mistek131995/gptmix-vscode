@@ -1,5 +1,6 @@
 const vscode = acquireVsCodeApi();
 let chatId = null;
+let models = null;
 
 const getHome = async () => {
     vscode.postMessage({
@@ -28,8 +29,9 @@ const switchChatButton = (isEnd) => {
     }
 };
 
-const insertModels = (models, lastMessageModel) => {
+const insertModels = (lastMessageModel) => {
     const element = document.querySelector("select[name='models-select']");
+    const buttonFile = document.querySelector("button#attach-file");
     element.innerHTML = "";
 
     models.forEach(item => {
@@ -37,6 +39,10 @@ const insertModels = (models, lastMessageModel) => {
         option.value = item.id;
         option.textContent = `${item.name} ${item.isFree ? '(free)' : ''}`;
         option.selected = lastMessageModel ? lastMessageModel === item.id : item.isDefault;
+
+        if(option.selected){
+            buttonFile.classList = "d-none";
+        }
 
         element.appendChild(option);
     });
@@ -200,9 +206,10 @@ window.addEventListener('message', async event => {
         case "getHomeResult":
             if(message){
                 chatId = message.chatId;
+                models = message.models;
                 const lastMessage = message.messages ? message.messages[message.messages.length -1] : null;
 
-                insertModels(message.models, lastMessage?.model);
+                insertModels(lastMessage?.model);
                 insertMessages(message.messages);
             }
             break;
@@ -295,4 +302,20 @@ document.querySelector("#file-input").addEventListener("change", (event) => {
 
         fileListContainer.appendChild(item);
     });
+});
+
+document.querySelector("select[name='models-select']").addEventListener("change", (event) => {
+    const target = event.target;
+    const model = models?.find(x => x.id === target.value);
+    const buttonFile = document.querySelector("button#attach-file");
+    const inputFile = document.querySelector("input#file-input");
+    const fileListContainer = document.querySelector("#file-list");
+
+    if(model?.canInputFile){
+        buttonFile.classList = "d-none";
+        fileListContainer.innerText = "";
+    }else{
+        inputFile.value = "";
+        buttonFile.classList = "d-block me-2";
+    }
 });
