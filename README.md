@@ -40,6 +40,8 @@
 
 ![Объясни код](assets/ExplainCodeExample.gif)
 
+![Объясни код](assets/FileExample.gif)
+
 
 ## 📝 Лицензия
 
