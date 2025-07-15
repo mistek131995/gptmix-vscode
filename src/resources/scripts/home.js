@@ -228,8 +228,10 @@ window.addEventListener('message', async event => {
             break;
         case "putMessage":
 
+
+
             switchChatButton(message.isEnd);
-            putMessage(message.message, message.role);
+            putMessage(message.message, message.role, message.files);
 
             if(message.isEnd){
                 await getHome();
@@ -238,7 +240,7 @@ window.addEventListener('message', async event => {
     }
 });
 
-const putMessage = (message, role) => {
+const putMessage = (message, role, files) => {
     const messageContainerElm = document.querySelector("#messages-container");
     const messages = messageContainerElm.querySelectorAll("div.message");
 
@@ -251,7 +253,7 @@ const putMessage = (message, role) => {
     if(lastMessage?.classList.contains(role)){
             lastMessage.innerHTML = marked.parse(message);
     } else {
-        appendMessage(message, role);
+        appendMessage(message, role, files);
     }
 };
 

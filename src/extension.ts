@@ -148,10 +148,11 @@ export function activate(context: vscode.ExtensionContext) {
               });
             }
 
-            const onChunk = (message: string, role: string, isEnd: boolean) => {
+            const onChunk = (content: string, role: string, isEnd: boolean) => {
               webviewView.webview.postMessage({
                 command: "putMessage",
-                message: message,
+                message: content,
+                files: message.files.map((file: any) => {return {id: "", name: file.name}}),
                 role: role,
                 isEnd: isEnd
               });
