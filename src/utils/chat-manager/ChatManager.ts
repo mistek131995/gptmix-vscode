@@ -8,7 +8,7 @@ type Chat = {
 }
 
 export class ChatManager{
-    private chats: Map<string, Chat> = new Map<string, Chat>();
+    public static chats: Map<string, Chat> = new Map<string, Chat>();
 
     async createChatAsync(message: string, token: string | undefined, model: string | null = null) : Promise<string>{
         var chatId = await postAsync("/api/v1/chats", {
@@ -16,7 +16,7 @@ export class ChatManager{
             isExplain: model === null
         }, token);
 
-        this.chats.set(chatId, {});
+        ChatManager.chats.set(chatId, {});
 
         return chatId;
     }
@@ -24,11 +24,11 @@ export class ChatManager{
     async sendMessageAsync(chatId: string, message: string, token: string | undefined, 
         onChunkCallback: (chunk: string, role: string, isEnd: boolean) => void, model: string | null = null, files: File[] = [])
     {
-        let chat = this.chats.get(chatId);
+        let chat = ChatManager.chats.get(chatId);
 
         if(!chat){
             chat = {};
-            this.chats.set(chatId, chat);
+            ChatManager.chats.set(chatId, chat);
         }
 
         chat.question = message;
@@ -87,7 +87,9 @@ export class ChatManager{
 
     abortStreaming(chatId: string)
     {
-        const chat = this.chats.get(chatId);
+        const chat = ChatManager.chats.get(chatId);
+
+        console.log(chat);
 
         if(chat){
             chat.abortController?.abort();
