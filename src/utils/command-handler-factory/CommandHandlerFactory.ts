@@ -1,4 +1,5 @@
 import { DeleteChatHandler } from "./handlers/delete-chat/DeleteChatHandler";
+import { ExplainCodeHandler } from "./handlers/explain-code/ExplainCodeHandler";
 import { GetChatListHandler } from "./handlers/get-chat-list/GetChatListHandler";
 import { GetHomeHandler } from "./handlers/get-home/GetHomeHandler";
 import { LoginInHandler } from "./handlers/login-in/LoginInHandler";
@@ -19,7 +20,8 @@ export class CommandHandlerFactory{
             getHome: new GetHomeHandler(),
             deleteChat: new DeleteChatHandler(),
             stopStreaming: new StopStreamingHandler(),
-            sendMessage: new SendMessageHandler()
+            sendMessage: new SendMessageHandler(),
+            explainCode: new ExplainCodeHandler()
         };
     }
 

@@ -10,7 +10,7 @@ type Chat = {
 export class ChatManager{
     private chats: Map<string, Chat> = new Map<string, Chat>();
 
-    async createChatAsync(message: string, token: string, model: string | null = null) : Promise<string>{
+    async createChatAsync(message: string, token: string | undefined, model: string | null = null) : Promise<string>{
         var chatId = await postAsync("/api/v1/chats", {
             message: message,
             isExplain: model === null

@@ -66,8 +66,10 @@ export function activate(context: vscode.ExtensionContext) {
 
       currentWebviewView.webview.html = await getHomeHtml(context, currentWebviewView.webview);
       currentWebviewView.webview.postMessage({
-        command: "explainCode",
-        message: selectedText
+        type: "explainCode",
+        data: {
+          content: selectedText
+        }
       });
     }
   });

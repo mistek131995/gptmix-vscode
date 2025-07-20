@@ -4,8 +4,10 @@ let models = null;
 
 const getHome = async () => {
     vscode.postMessage({
-        command: "getHome",
-        chatId: chatId
+        type: "getHome",
+        data: {
+            chatId: chatId
+        }
     });
 };
 
@@ -110,8 +112,10 @@ const stopStreaming = () => {
     switchChatButton(true);
 
     vscode.postMessage({
-        command: "stopStreaming",
-        chatId: chatId
+        type: "stopStreaming",
+        data: {
+            chatId: chatId
+        } 
     });
 };
 
@@ -216,7 +220,7 @@ window.addEventListener('message', async event => {
             }
             break;
         case "explainCode":
-            const rawCode = message.message;
+            const rawCode = message.data.content;
 
             const safeMarkdown = [
               "Объясни этот код",
@@ -227,8 +231,10 @@ window.addEventListener('message', async event => {
             ].join("\n");
 
             vscode.postMessage({
-                command: "fetchExplainCode",
-                message: safeMarkdown
+                type: "explainCode",
+                data: {
+                    message: safeMarkdown
+                }
             });
             break;
         case "updateChatId":
@@ -273,7 +279,7 @@ document.getElementById("login-out")?.addEventListener("click", () => {
 
 document.querySelector("#chat-list")?.addEventListener("click", () => {
     vscode.postMessage({
-        command: "getChatList"
+        type: "getChatList"
     });
 });
 
