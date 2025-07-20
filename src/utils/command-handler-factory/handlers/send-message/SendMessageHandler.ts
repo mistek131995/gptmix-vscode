@@ -8,6 +8,19 @@ export class SendMessageHandler implements ICommandHandler{
         const token = await context.secrets.get("token");
         const chatManager = new ChatManager();
 
+        if(!request.chatId){
+            request.chatId = await chatManager.createChatAsync(request.message, token);
+
+            if(!request.chatId){
+                return;
+            }
+
+            webview.postMessage({
+                command: "updateChatId",
+                chatId: request.chatId
+            });
+        }
+
         const onChunk = (content: string, role: string, isEnd: boolean) => {
             webview.postMessage({
                 chatId: request.chatId,
