@@ -23,7 +23,7 @@ export const postAsync = async (url: string, body: any, token: string | undefine
     });
 };
 
-export const postWithStreamingAsync = async (url: string, body: FormData, token: string, onChunk: (chunk: string, isEnd: boolean) => void, abortController: AbortController) : Promise<any> => {
+export const postWithStreamingAsync = async (url: string, body: FormData, token: string | undefined, onChunk: (chunk: string, isEnd: boolean) => void, abortController: AbortController) : Promise<any> => {
     fetch(`${host}${url}`, {
         method: "POST",
         signal: abortController.signal,
