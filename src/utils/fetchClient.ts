@@ -1,9 +1,9 @@
 import { isJsonString } from "./string";
 import * as vscode from "vscode";
 
-const host = "https://mixgpt.ru";
+export const host = "https://mixgpt.ru";
 
-export const postAsync = async (url: string, body: any, token: string) : Promise<any> => {
+export const postAsync = async (url: string, body: any, token: string | undefined) : Promise<any> => {
     return fetch(`${host}${url}`, {
         method: "POST",
         headers: {
@@ -13,10 +13,13 @@ export const postAsync = async (url: string, body: any, token: string) : Promise
         body: JSON.stringify(body)
     }).then(async response => {
         if(response.ok){
-            return await response.json();;
+            return await response.json();
         }
 
         vscode.commands.executeCommand("mixgpt.httperror", response);
+    }).catch(error => {
+        console.log(error);
+        vscode.commands.executeCommand("mixgpt.httperror", null);
     });
 };
 
@@ -56,7 +59,7 @@ export const postWithStreamingAsync = async (url: string, body: FormData, token:
     });
 };
 
-export const getAsync = async (url: string, token: string) : Promise<any> => {
+export const getAsync = async (url: string, token: string|undefined) : Promise<any> => {
     return await fetch(`${host}${url}`, {
         method: "GET",
         headers: {

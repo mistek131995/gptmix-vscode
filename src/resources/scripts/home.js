@@ -92,11 +92,13 @@ const sendMessage = async () => {
     );
 
     vscode.postMessage({
-        command: "sendMessage",
-        chatId: chatId,
-        message: message.value,
-        files: files,
-        model: model.value
+        type: "sendMessage",
+        data: {
+            chatId: chatId,
+            message: message.value,
+            files: files,
+            model: model.value
+        }
     });
 
     message.value = "";
@@ -202,7 +204,7 @@ document.querySelector("textarea[name='message']")?.addEventListener("keydown", 
 window.addEventListener('message', async event => {
     const message = event.data;
 
-    switch(message.command){
+    switch(message.type){
         case "getHomeResult":
             if(message){
                 chatId = message.chatId;
@@ -265,7 +267,7 @@ const putMessage = (message, role, files) => {
 
 document.getElementById("login-out")?.addEventListener("click", () => {
     vscode.postMessage({
-        command: "loginOut"
+        type: "loginOut"
     });
 });
 

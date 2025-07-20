@@ -21,7 +21,7 @@ export class ChatManager{
         return chatId;
     }
 
-    async sendMessageAsync(chatId: string, message: string, token: string, 
+    async sendMessageAsync(chatId: string, message: string, token: string | undefined, 
         onChunkCallback: (chunk: string, role: string, isEnd: boolean) => void, model: string | null = null, files: File[] = [])
     {
         let chat = this.chats.get(chatId);
@@ -70,12 +70,12 @@ export class ChatManager{
         await postWithStreamingAsync("/api/v3/chats/messages", formData, token, onChunk, chat.abortController);
     }
 
-    async getChatAsync(chatId: string | undefined, token: string) : Promise<any>
+    async getChatAsync(chatId: string | undefined, token: string|undefined) : Promise<any>
     {
         return await getAsync(`/api/v1/plugins${chatId ? `/${chatId}` : ''}`, token);
     }
 
-    async getChatList(token: string) : Promise<any>
+    async getChatList(token: string|undefined) : Promise<any>
     {
         return await getAsync("/api/v1/chats", token);
     }
