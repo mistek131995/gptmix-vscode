@@ -206,9 +206,10 @@ document.querySelector("textarea[name='message']")?.addEventListener("keydown", 
 });
 
 window.addEventListener('message', async event => {
-    const message = event.data;
+    const type = event.data.type;
+    const message = event.data.data;
 
-    switch(message.type){
+    switch(type){
         case "getHomeResult":
             if(message){
                 chatId = message.chatId;

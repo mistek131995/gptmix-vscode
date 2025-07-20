@@ -15,9 +15,11 @@ export class GetHomeHandler implements ICommandHandler{
         if(result){
             webview.postMessage({
                 type: "getHomeResult",
-                chatId: request.chatId,
-                messages: result.messages,
-                models: result.models
+                data: {
+                    chatId: request.chatId,
+                    messages: result.messages,
+                    models: result.models
+                }
             });
         }
     }

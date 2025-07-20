@@ -6,7 +6,6 @@ import { ChatManager } from './utils/chat-manager/ChatManager';
 import { CommandHandlerFactory } from './utils/command-handler-factory/CommandHandlerFactory';
 
 export function activate(context: vscode.ExtensionContext) {
-  const chatManager = new ChatManager();
   const commandHandlerFactory = new CommandHandlerFactory();
   let currentWebviewView: vscode.WebviewView | undefined;
 
@@ -30,7 +29,9 @@ export function activate(context: vscode.ExtensionContext) {
 
 
       webviewView.webview.onDidReceiveMessage(async (command: {type: string, data: any}) => {
-        commandHandlerFactory.handlMessage(command, context, webviewView.webview);
+        currentWebviewView = webviewView;
+        
+        commandHandlerFactory.handlMessage(command, context, currentWebviewView.webview);
       });
     }
   });

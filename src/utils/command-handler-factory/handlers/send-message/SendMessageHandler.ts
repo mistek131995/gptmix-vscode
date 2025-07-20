@@ -16,19 +16,23 @@ export class SendMessageHandler implements ICommandHandler{
             }
 
             webview.postMessage({
-                command: "updateChatId",
-                chatId: request.chatId
+                type: "updateChatId",
+                data: {
+                    chatId: request.chatId
+                }
             });
         }
 
         const onChunk = (content: string, role: string, isEnd: boolean) => {
             webview.postMessage({
-                chatId: request.chatId,
-                command: "putMessage",
-                message: content,
-                files: request.files.map((file: any) => {return {id: "", name: file.name}}),
-                role: role,
-                isEnd: isEnd
+                type: "putMessage",
+                data: {
+                    chatId: request.chatId,
+                    message: content,
+                    files: request.files.map((file: any) => {return {id: "", name: file.name}}),
+                    role: role,
+                    isEnd: isEnd
+                }
             });
         };
 

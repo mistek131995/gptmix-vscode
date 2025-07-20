@@ -12,7 +12,7 @@ export class DeleteChatHandler implements ICommandHandler{
 
         if(result){
             webview.postMessage({ 
-                command: "getChatListResult",
+                type: "getChatListResult",
                 data: await chatManager.getChatList(token)
             });
         }
