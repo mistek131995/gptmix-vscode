@@ -80,7 +80,7 @@ export class ChatManager{
         return await getAsync("/api/v1/chats", token);
     }
 
-    async deleteChatAsync(chatId: string, token: string) : Promise<any>
+    async deleteChatAsync(chatId: string, token: string|undefined) : Promise<any>
     {
         return await deleteAsync(`/api/v1/chats/${chatId}`, token);
     }

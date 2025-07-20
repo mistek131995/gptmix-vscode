@@ -53,7 +53,9 @@ const insertChatList = (chats) => {
 
             vscode.postMessage({
                 type: "deleteChat",
-                chatId: event.currentTarget.parentElement.id
+                data: {
+                    chatId: event.currentTarget.parentElement.id
+                }
             });
         });
 

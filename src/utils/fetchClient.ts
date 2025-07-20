@@ -75,7 +75,7 @@ export const getAsync = async (url: string, token: string|undefined) : Promise<a
     });
 };
 
-export const deleteAsync = async(url: string, token: string) : Promise<any> => {
+export const deleteAsync = async(url: string, token: string|undefined) : Promise<any> => {
     return fetch(`${host}${url}`, {
         method: "DELETE",
         headers: {
