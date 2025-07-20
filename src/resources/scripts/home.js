@@ -43,7 +43,7 @@ const insertModels = (lastMessageModel) => {
         option.selected = lastMessageModel ? lastMessageModel === item.id : item.isDefault;
 
         if(option.selected){
-            buttonFile.classList = "d-none";
+            buttonFile.classList = item.canInputFile ? "d-block" : "d-none";
         }
 
         element.appendChild(option);
@@ -319,7 +319,7 @@ document.querySelector("select[name='models-select']").addEventListener("change"
     const inputFile = document.querySelector("input#file-input");
     const fileListContainer = document.querySelector("#file-list");
 
-    if(model?.canInputFile){
+    if(!model?.canInputFile){
         buttonFile.classList = "d-none";
         fileListContainer.innerText = "";
     }else{

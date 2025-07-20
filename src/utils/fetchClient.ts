@@ -18,7 +18,6 @@ export const postAsync = async (url: string, body: any, token: string | undefine
 
         vscode.commands.executeCommand("mixgpt.httperror", response);
     }).catch(error => {
-        console.log(error);
         vscode.commands.executeCommand("mixgpt.httperror", null);
     });
 };
