@@ -60,8 +60,11 @@ export class ChatManager{
         const formData = new FormData();
         formData.append("chatId", chatId);
         formData.append("message", message);
-        formData.append("model", model);
         formData.append("isExplain", model === null);
+
+        if(model){
+            formData.append("model", model);
+        }
 
         files?.forEach(file => {
             formData.append("files", new Blob(file.content), file.name);

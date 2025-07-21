@@ -12,30 +12,41 @@ export class ExplainCodeHandler implements ICommandHandler{
 
         if(result){
             webview.postMessage({
-                command: "getHomeResult",
-                chatId: undefined,
-                messages: result.messages,
-                models: result.models
+                type: "getHomeResult",
+                data: {
+                    chatId: undefined,
+                    messages: result.messages,
+                    models: result.models
+                }
             });
         }
-
-        const onChunk = (message: string, role: string, isEnd: boolean) => {
-            webview.postMessage({
-                command: "putMessage",
-                message: message,
-                role: role,
-                isEnd: isEnd
-            });
-        };
 
         //Возможно чат лучше создавать до перехода на WebView и передавать Id при переходе.
         const chatId = await chatManager.createChatAsync(request.message, token);
         webview.postMessage({
-            command: "updateChatId",
-            chatId: chatId
+            type: "updateChatId",
+            data: {
+                chatId: chatId
+            }
         });
 
+        const onChunk = (message: string, role: string, isEnd: boolean) => {
 
+            console.log(chatId);
+
+            webview.postMessage({
+                type: "putMessage",
+                data: {
+                    chatId: chatId,
+                    message: message,
+                    role: role,
+                    isEnd: isEnd
+                }
+            });
+        };
+
+        console.log(chatId);
+        
         await chatManager.sendMessageAsync(chatId, request.message, token, onChunk);
     }
 }

@@ -127,7 +127,7 @@ const appendMessage = (message, role, files) => {
     div.innerHTML = marked.parse(message);
     div.className = `message ${role}`;
 
-    if(files.length > 0){
+    if(files && files.length > 0){
         const fileListDiv = document.createElement("div");
         const line = document.createElement("hr");
 
@@ -221,7 +221,7 @@ window.addEventListener('message', async event => {
             }
             break;
         case "explainCode":
-            const rawCode = message.data.content;
+            const rawCode = message.content;
 
             const safeMarkdown = [
               "Объясни этот код",
