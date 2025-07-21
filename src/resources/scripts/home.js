@@ -218,6 +218,8 @@ window.addEventListener('message', async event => {
 
                 insertModels(lastMessage?.model);
                 insertMessages(message.messages);
+
+                hljs.highlightAll();
             }
             break;
         case "explainCode":
@@ -250,6 +252,8 @@ window.addEventListener('message', async event => {
                 if(message.isEnd){
                     await getHome();
                 }
+
+                hljs.highlightAll();
             }
             break;
     }
