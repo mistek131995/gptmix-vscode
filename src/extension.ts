@@ -79,6 +79,10 @@ export function activate(context: vscode.ExtensionContext) {
 
   });
 
+  const reviewCode = vscode.commands.registerCommand("mixgpt.reviewcode", async () => {
+
+  });
+
   const httpError = vscode.commands.registerCommand("mixgpt.httperror", async (data: Response) => {
     if(!currentWebviewView){
       return;
@@ -111,5 +115,6 @@ export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(webView);
   context.subscriptions.push(explainCode);
   context.subscriptions.push(fixCode);
+  context.subscriptions.push(reviewCode);
   context.subscriptions.push(httpError);
 }

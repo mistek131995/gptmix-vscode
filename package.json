@@ -31,6 +31,11 @@
           "command": "mixgpt.fixcode",
           "when": "editorTextFocus",
           "group": "navigation"
+        },
+        {
+          "command": "mixgpt.reviewcode",
+          "when": "editorTextFocus",
+          "group": "navigation"
         }
       ]
     },
@@ -42,6 +47,10 @@
       {
         "command": "mixgpt.fixcode",
         "title": "Исправь код"
+      },
+      {
+        "command": "mixgpt.reviewcode",
+        "title": "Проверить код"
       },
       {
         "command": "mixgpt.httperror",
