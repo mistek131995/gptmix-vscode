@@ -36,7 +36,7 @@ export function activate(context: vscode.ExtensionContext) {
     }
   });
 
-  let explainCode = vscode.commands.registerCommand('mixgpt.explaincode', async () => {
+  const explainCode = vscode.commands.registerCommand('mixgpt.explaincode', async () => {
     const editor = vscode.window.activeTextEditor;
 
     if(!editor) {
@@ -75,7 +75,11 @@ export function activate(context: vscode.ExtensionContext) {
     }
   });
 
-  let httpError = vscode.commands.registerCommand("mixgpt.httperror", async (data: Response) => {
+  const fixCode = vscode.commands.registerCommand("mixgpt.fixcode", async () => {
+
+  });
+
+  const httpError = vscode.commands.registerCommand("mixgpt.httperror", async (data: Response) => {
     if(!currentWebviewView){
       return;
     }
@@ -106,5 +110,6 @@ export function activate(context: vscode.ExtensionContext) {
 
   context.subscriptions.push(webView);
   context.subscriptions.push(explainCode);
+  context.subscriptions.push(fixCode);
   context.subscriptions.push(httpError);
 }

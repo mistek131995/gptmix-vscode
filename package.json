@@ -26,6 +26,11 @@
           "command": "mixgpt.explaincode",
           "when": "editorTextFocus",
           "group": "navigation"
+        },
+        {
+          "command": "mixgpt.fixcode",
+          "when": "editorTextFocus",
+          "group": "navigation"
         }
       ]
     },
@@ -33,6 +38,10 @@
       {
         "command": "mixgpt.explaincode",
         "title": "Объясни код"
+      },
+      {
+        "command": "mixgpt.fixcode",
+        "title": "Исправь код"
       },
       {
         "command": "mixgpt.httperror",
